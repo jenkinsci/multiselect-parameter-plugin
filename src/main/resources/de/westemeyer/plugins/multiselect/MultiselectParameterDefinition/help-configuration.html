@@ -1,0 +1,27 @@
+<div>
+    <b>The actual parameter configuration as CSV.</b><br/>
+    There are four different types of rows used to describe the parameter and its values/variables:<br/>
+    <ul>
+        <li>H: header labels for the drop down boxes, one per variable</li>
+        <li>V: variable names used as environment variables in build process</li>
+        <li>T: titles for the content items in the following row (optional, fallback is the content itself as a label)</li>
+        <li>C: the content items that will be passed in the environment variables upon selection</li>
+    </ul>
+    The rows "H" and "V" only appear once as first and second row. The rows "T" and "C" are repeated.<br/>
+    Example:<br/>
+    <blockquote>
+        H,Sport,Team<br/>
+        V,SELECTED_SPORT,SELECTED_TEAM<br/>
+        C,Tennis,Tennisclub Rumeln-Kaldenhausen e. V.<br/>
+        T,,Alternative label<br/>
+        C,Tennis,Oppumer TC<br/>
+        C,Football,Rumelner TV<br/>
+        C,Football,FC Rumeln<br/>
+        C,Wakeboard,WSC Duisburg Rheinhausen<br/>
+    </blockquote>
+    This will display two drop down boxes. One with the label "Sport", one with the label "Team".<br/>
+    The first drop down box contains the values "Tennis", "Football" and "Wakeboard", the second will only hold the values "Tennisclub Rumeln-Kaldenhausen e. V." and "Oppumer TC".<br/>
+    When the first value is switched to "Wakeboard", the second drop down boxes content will change to "WSC Duisburg Rheinhausen".<br/>
+    As soon as the build is started, the environment variables SELECTED_SPORT and SELECTED_TEAM will contain the selected values.<br/>
+    Note: the "T" rows are optional, but may be useful for more technical content values that need a little bit of extra explanation.
+</div>

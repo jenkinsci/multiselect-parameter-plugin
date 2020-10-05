@@ -1,0 +1,13 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:f="/lib/form">
+    <f:entry title="${it.name}" description="${it.description}">
+        <div>
+            <table>
+                <tr><td><b>${%variable}</b></td><td><b>${%value}</b></td></tr>
+                <j:forEach var="variable" items="${it.selectedValues}">
+                    <tr><td>${variable.key}</td><td>${variable.value}</td></tr>
+                </j:forEach>
+            </table>
+        </div>
+    </f:entry>
+</j:jelly>

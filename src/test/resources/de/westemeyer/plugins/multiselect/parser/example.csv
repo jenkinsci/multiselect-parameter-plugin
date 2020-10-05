@@ -1,0 +1,11 @@
+H,Type,Sport,Country,Team
+V,SELECTED_TYPE,SELECTED_SPORT,SELECTED_COUNTRY,SELECTED_TEAM
+C,Water,Wakeboarding,Germany,WSC Duisburg Rheinhausen
+C,Water,Wakeboarding,Germany,WSC Paderborn
+C,Water,Wakeboarding,Austria,WSC Wien
+T,,,,Alternative team name
+C,Water,Waterball,Germany,Waterball Team
+C,Water,Surfing,England,Bristol Surf Team
+C,Ball,Football,France,Paris St. Germain
+T,,,,Alternative team name
+C,Ball,Handball,Germany,THW Kiel

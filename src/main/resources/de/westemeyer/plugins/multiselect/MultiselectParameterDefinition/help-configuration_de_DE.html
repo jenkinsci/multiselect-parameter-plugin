@@ -1,0 +1,28 @@
+<div>
+    <b>Die eigentliche Konfiguration des Parameters im CSV-Format.</b><br/>
+    Es gibt vier verschiedene Typen von Zeilen, die für die Beschreibung des Parameters und seiner Werte/Variablen zum Einsatz kommen:<br/>
+    <ul>
+        <li>H: beschreibende Titel, die für die Auswahllisten zum Einsatz kommen. Je ein Titel pro Liste/Variable</li>
+        <li>V: Variablennamen die als Umgebungsvariablen im Build-Prozess gesetzt werden</li>
+        <li>T: Titel für die einzelnen Werte in der jeweils folgenden Zeile (optional, ansonsten wird der jeweilige Wert selbst verwendet)</li>
+        <li>C: die einzelnen Werte, die für die jeweiligen Umgebungsvariablen beim Start des Builds eingesetzt werden</li>
+    </ul>
+    Die Zeilen "H" und "V" kommen jeweils genau ein mal zu Beginn der Konfiguration vor, die Zeilen "T" und "C" beliebig oft.<br/>
+
+    Beispiel:<br/>
+    <blockquote>
+        H,Sport,Mannschaft<br/>
+        V,SELECTED_SPORT,SELECTED_TEAM<br/>
+        C,Tennis,Tennisclub Rumeln-Kaldenhausen e. V.<br/>
+        T,,Alternative label<br/>
+        C,Tennis,Oppumer TC<br/>
+        C,Fußball,Rumelner TV<br/>
+        C,Fußball,FC Rumeln<br/>
+        C,Wakeboard,WSC Duisburg Rheinhausen<br/>
+    </blockquote>
+    In diesem Beispiel werden beim parametrisierten Build zwei Auswahllisten gezeigt. Eine mit der Bezeichnung "Sport", eine mit der Bezeichnung "Mannschaft".<br/>
+    Die erste Auswahlliste enthält die Werte "Tennis", "Fußball" und "Wakeboard", die zweite wird lediglich die Werte "Tennisclub Rumeln-Kaldenhausen e. V." und "Oppumer TC" enthalten.<br/>
+    Wenn der erste Wert auf "Wakeboard" geändert wird, wird die zweite Auswahlbox nur noch den Wert "WSC Duisburg Rheinhausen" zeigen.<br/>
+    Sobald der Build gestartet wird, werden die beiden Umgebungsvariablen SELECTED_SPORT und SELECTED_TEAM die ausgewählten Werte enthalten.<br/>
+    Beachte: die "T" Zeilen sind optional, können aber für eher technische Werte sinnvoll sein, um etwas sprechendere Bezeichnungen darzustellen.
+</div>
