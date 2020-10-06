@@ -1,4 +1,4 @@
-# Multiselect Parameters Plugin
+# Multiselect Parameter Plugin
 
 ## Introduction
 
@@ -32,17 +32,14 @@ In the following simple example, the "build with parameters" step requests to se
 a number of sports categories and countries.
  
 ```csv
-H,Type,Sport,Country,Team
-V,SELECTED_TYPE,SELECTED_SPORT,SELECTED_COUNTRY,SELECTED_TEAM
-C,Water,Wakeboarding,Germany,WSC Duisburg Rheinhausen
-C,Water,Wakeboarding,Germany,WSC Paderborn
-C,Water,Wakeboarding,Austria,WSC Wien
-T,,,,Alternative team name
-C,Water,Waterball,Germany,Waterball Team
-C,Water,Surfing,England,Bristol Surf Team
-C,Ball,Football,France,Paris St. Germain
-T,,,,Alternative team name
-C,Ball,Handball,Germany,THW Kiel
+H,Sport,Team
+V,SELECTED_SPORT,SELECTED_TEAM
+C,Tennis,Tennisclub Rumeln-Kaldenhausen e. V.
+T,,Alternative label
+C,Tennis,Oppumer TC
+C,Football,Rumelner TV
+C,Football,FC Rumeln
+C,Wakeboard,WSC Duisburg Rheinhausen
 ```
 
 This will display two drop down boxes. One with the label "Sport", one with the label "Team".
