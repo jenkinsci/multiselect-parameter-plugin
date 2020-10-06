@@ -2,6 +2,7 @@ package de.westemeyer.plugins.multiselect;
 
 import de.westemeyer.plugins.multiselect.parser.MultiselectParameterParser;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
@@ -11,6 +12,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
+import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -194,7 +196,13 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
          * @return form validation result
          * @throws IOException in case a problem occurred while trying to read configuration
          */
+        @POST
         public FormValidation doCheckConfiguration(@QueryParameter String value) throws IOException {
+            // empty configuration is not useful, parameter can just as well be removed
+            if (Util.fixEmptyAndTrim(value) == null) {
+                return FormValidation.error(Messages.FormValidation_ConfigurationIsEmpty());
+            }
+
             // create new parameter parser instance
             MultiselectParameterParser parser = new MultiselectParameterParser(MultiselectConfigurationFormat.CSV);
 

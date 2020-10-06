@@ -7,6 +7,6 @@
     <f:textbox />
   </f:entry>
   <f:entry title="${%configuration}" field="configuration">
-    <f:textarea value="${instance.decisionTree}" />
+    <f:textarea value="${instance.decisionTree}" checkMethod="post"/>
   </f:entry>
 </j:jelly>
