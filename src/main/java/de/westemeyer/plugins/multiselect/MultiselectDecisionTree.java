@@ -130,7 +130,7 @@ public class MultiselectDecisionTree implements Serializable {
 
     /**
      * Create key value pairs of variable name and its value from its name and its selected column index.
-     * For example: COLUMN1=3 =&gt; COLUMN1=ValueInRow3.
+     * For example: COLUMN1=3 resolves to COLUMN1=ValueInRow3.
      * @param selectedValues map of variable names and column indices (row numbers)
      * @return property list of table cell values with variable name as key
      * @throws Exception in case an error occurs while
