@@ -1,7 +1,6 @@
 # Multiselect Parameter Plugin
 
 [![Build Status](https://ci.jenkins.io/job/Plugins/job/multiselect-parameter-plugin/job/main/badge/icon)](https://ci.jenkins.io/job/Plugins/job/multiselect-parameter-plugin/job/main/)
-[![Travis](https://img.shields.io/travis/jenkinsci/multiselect-parameter-plugin.svg?logo=travis&label=build&logoColor=white)](https://travis-ci.org/jenkinsci/multiselect-parameter-plugin)
 [![Contributors](https://img.shields.io/github/contributors/jenkinsci/multiselect-parameter-plugin.svg)](https://github.com/jenkinsci/multiselect-parameter-plugin/graphs/contributors)
 [![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/multiselect-parameter.svg)](https://plugins.jenkins.io/multiselect-parameter)
 [![GitHub release](https://img.shields.io/github/release/jenkinsci/multiselect-parameter-plugin.svg?label=changelog)](https://github.com/jenkinsci/multiselect-parameter-plugin/releases/latest)
