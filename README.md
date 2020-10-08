@@ -1,5 +1,12 @@
 # Multiselect Parameter Plugin
 
+[![Build Status](https://ci.jenkins.io/job/Plugins/job/multiselect-parameter-plugin/job/master/badge/icon)](https://ci.jenkins.io/job/Plugins/job/multiselect-parameter-plugin/job/master/)
+[![Travis](https://img.shields.io/travis/jenkinsci/multiselect-parameter-plugin.svg?logo=travis&label=build&logoColor=white)](https://travis-ci.org/jenkinsci/multiselect-parameter-plugin)
+[![Contributors](https://img.shields.io/github/contributors/jenkinsci/multiselect-parameter-plugin.svg)](https://github.com/jenkinsci/multiselect-parameter-plugin/graphs/contributors)
+[![Jenkins Plugin](https://img.shields.io/jenkins/plugin/v/multiselect-parameter.svg)](https://plugins.jenkins.io/multiselect-parameter)
+[![GitHub release](https://img.shields.io/github/release/jenkinsci/multiselect-parameter-plugin.svg?label=changelog)](https://github.com/jenkinsci/multiselect-parameter-plugin/releases/latest)
+[![Jenkins Plugin Installs](https://img.shields.io/jenkins/plugin/i/multiselect-parameter.svg?color=blue)](https://plugins.jenkins.io/multiselect-parameter)
+
 ## Introduction
 
 The Multiselect parameter plugin is an extension to Jenkins parameterized builds. It allows Jenkins users to 
