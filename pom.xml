@@ -9,7 +9,7 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>multiselect-parameter</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1</version>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     <packaging>hpi</packaging>
     <properties>
@@ -61,7 +61,7 @@
         <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-      <tag>HEAD</tag>
+      <tag>multiselect-parameter-1.1</tag>
   </scm>
     <repositories>
         <repository>
