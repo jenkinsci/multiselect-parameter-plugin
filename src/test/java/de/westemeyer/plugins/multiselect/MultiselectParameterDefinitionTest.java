@@ -85,14 +85,21 @@ public class MultiselectParameterDefinitionTest {
         Assert.assertEquals(Messages.FormValidation_NotEnoughColumns(3), formValidation.getMessage());
         Assert.assertEquals(FormValidation.Kind.WARNING, formValidation.kind);
         formValidation = descriptor.doCheckConfiguration("");
-        Assert.assertEquals(Messages.FormValidation_NoVariablesDefined(), formValidation.getMessage());
-        Assert.assertEquals(FormValidation.Kind.WARNING, formValidation.kind);
+        Assert.assertEquals(Messages.FormValidation_ConfigurationIsEmpty(), formValidation.getMessage());
+        Assert.assertEquals(FormValidation.Kind.ERROR, formValidation.kind);
     }
 
     @Test
     void getDisplayName() {
         MultiselectParameterDefinition.DescriptorImpl descriptor = new MultiselectParameterDefinition.DescriptorImpl();
         Assert.assertEquals(Messages.MultiselectParameterDefinition_DisplayName(), descriptor.getDisplayName());
+    }
+
+    @Test
+    void getUuid() {
+        MultiselectParameterDefinition definition = new MultiselectParameterDefinition("name", "description", null, CSV);
+        Assert.assertNotNull(definition.getUuid());
+        Assert.assertEquals(15, definition.getUuid().length());
     }
 
     @Test
