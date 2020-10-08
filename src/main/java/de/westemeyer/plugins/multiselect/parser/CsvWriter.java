@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
 
@@ -48,7 +49,7 @@ public class CsvWriter implements ConfigSerialization {
     @Override
     public void serialize(MultiselectDecisionTree decisionTree, OutputStream outputStream) throws Exception {
         // wrap output stream in writer object
-        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream)) {
+        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
             // write header row content
             writeList("H", decisionTree.getVariableLabels(), writer);
 

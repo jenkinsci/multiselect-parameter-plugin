@@ -15,10 +15,10 @@ public enum MultiselectConfigurationFormat {
     CSV(CsvParser::new, CsvWriter::new);
 
     /** Parser supplier for a format. */
-    private final Supplier<ConfigParser> parserFactory;
+    private final transient Supplier<ConfigParser> parserFactory;
 
     /** Writer factory for a format. */
-    private final Supplier<ConfigSerialization> writerFactory;
+    private final transient Supplier<ConfigSerialization> writerFactory;
 
     /**
      * Create new configuration format instance.

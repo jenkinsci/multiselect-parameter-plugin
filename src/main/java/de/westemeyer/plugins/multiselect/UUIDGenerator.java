@@ -23,7 +23,7 @@ class UUIDGenerator {
 
         // concatenate 30 random characters
         for (int i = 0; i < length; ++i) {
-            uuid.append(ALPHABET.charAt(Math.abs(numberGenerator.nextInt()) % ALPHABET.length()));
+            uuid.append(ALPHABET.charAt(numberGenerator.nextInt(ALPHABET.length() - 1)));
         }
 
         // return new string from builder object

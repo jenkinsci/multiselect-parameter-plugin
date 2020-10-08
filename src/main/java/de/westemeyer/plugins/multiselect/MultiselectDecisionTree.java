@@ -7,13 +7,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
@@ -122,7 +122,7 @@ public class MultiselectDecisionTree implements Serializable {
      */
     public static MultiselectDecisionTree parse(String csvInput) {
         // create input stream from example CSV
-        InputStream resourceAsStream = new ByteArrayInputStream(csvInput.getBytes());
+        InputStream resourceAsStream = new ByteArrayInputStream(csvInput.getBytes(StandardCharsets.UTF_8));
 
         // parse input stream to tree meta object
         return MultiselectConfigurationFormat.CSV.createParser().analyzeConfiguration(resourceAsStream);
@@ -223,7 +223,7 @@ public class MultiselectDecisionTree implements Serializable {
             serialize(writer, byteArrayOutputStream);
 
             // assert symmetrical parsing/serialising
-            return byteArrayOutputStream.toString();
+            return byteArrayOutputStream.toString(StandardCharsets.UTF_8.toString());
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error serializing configuration", e);
             return "";
