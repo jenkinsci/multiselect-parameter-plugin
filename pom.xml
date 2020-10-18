@@ -10,7 +10,7 @@
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>multiselect-parameter</artifactId>
     <version>1.2-SNAPSHOT</version>
-    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+    <url>https://github.com/jenkinsci/${project.artifactId}-plugin/blob/main/README.md</url>
     <packaging>hpi</packaging>
     <properties>
         <jenkins.version>2.235.1</jenkins.version>
