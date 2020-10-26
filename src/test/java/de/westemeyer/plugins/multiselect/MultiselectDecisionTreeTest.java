@@ -16,7 +16,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 class MultiselectDecisionTreeTest {
+    /** Csv input content for tests. */
     private static final String INPUT_CSV = "H,Type,Sport,Country,Team\nV,SELECTED_TYPE,SELECTED_SPORT,SELECTED_COUNTRY,SELECTED_TEAM\nC,Water,Wakeboarding,Germany,WSC Duisburg Rheinhausen\nC,Water,Wakeboarding,Germany,WSC Paderborn\nC,Water,Wakeboarding,Austria,WSC Wien\nT,,,,Alternative team name\nC,Water,Waterball,Germany,Waterball Team\nC,Water,Surfing,England,Bristol Surf Team\nC,Ball,Football,France,Paris St. Germain\nT,,,,Alternative team name\nC,Ball,Handball,Germany,THW Kiel\n";
+
+    /** Constant for SELECTED_TYPE content variable. */
+    private static final String SELECTED_TYPE = "SELECTED_TYPE";
+
+    /** Constant for SELECTED_SPORT content variable. */
+    private static final String SELECTED_SPORT = "SELECTED_SPORT";
+
+    /** Constant for SELECTED_COUNTRY content variable. */
+    private static final String SELECTED_COUNTRY = "SELECTED_COUNTRY";
+
+    /** Constant for SELECTED_TEAM content variable. */
+    private static final String SELECTED_TEAM = "SELECTED_TEAM";
 
     @Test
     void resolveValues() throws Exception {
@@ -30,19 +43,19 @@ class MultiselectDecisionTreeTest {
         properties = tree.resolveValues(selection);
         Assert.assertEquals(0, properties.size());
 
-        selection.put("SELECTED_TYPE", 0);
-        selection.put("SELECTED_SPORT", 0);
-        selection.put("SELECTED_COUNTRY", 1);
-        selection.put("SELECTED_TEAM", 1);
+        selection.put(SELECTED_TYPE, 0);
+        selection.put(SELECTED_SPORT, 0);
+        selection.put(SELECTED_COUNTRY, 1);
+        selection.put(SELECTED_TEAM, 1);
         Assertions.assertThrows(IndexOutOfBoundsException.class, () -> tree.resolveValues(selection));
 
-        selection.put("SELECTED_TEAM", 0);
+        selection.put(SELECTED_TEAM, 0);
         properties = tree.resolveValues(selection);
         Assert.assertEquals(4, properties.size());
-        Assert.assertEquals("Water", properties.get("SELECTED_TYPE"));
-        Assert.assertEquals("Wakeboarding", properties.get("SELECTED_SPORT"));
-        Assert.assertEquals("Austria", properties.get("SELECTED_COUNTRY"));
-        Assert.assertEquals("WSC Wien", properties.get("SELECTED_TEAM"));
+        Assert.assertEquals("Water", properties.get(SELECTED_TYPE));
+        Assert.assertEquals("Wakeboarding", properties.get(SELECTED_SPORT));
+        Assert.assertEquals("Austria", properties.get(SELECTED_COUNTRY));
+        Assert.assertEquals("WSC Wien", properties.get(SELECTED_TEAM));
     }
 
     @Test

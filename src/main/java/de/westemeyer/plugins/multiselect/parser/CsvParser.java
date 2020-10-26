@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * Parser implementation to use for CSV configuration type.
  */
 public class CsvParser implements ConfigParser {
+    /** Logger for csv parser. */
     private static final Logger LOGGER = Logger.getLogger(CsvParser.class.getName());
 
     /** Form validation result, null if everything is OK. */

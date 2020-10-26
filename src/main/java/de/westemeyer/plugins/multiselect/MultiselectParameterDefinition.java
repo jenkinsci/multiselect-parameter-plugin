@@ -38,6 +38,9 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     /** Logger for this object. */
     private static final Logger LOGGER = Logger.getLogger(MultiselectParameterDefinition.class.getName());
 
+    /** Configured parameter name constant. */
+    private static final String PARAMETER_NAME = "name";
+
     /** Job CSV configuration content. */
     private MultiselectDecisionTree decisionTree;
 
@@ -72,13 +75,13 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         Queue<Integer> itemPath = createCoordinates(coordinates);
         List<String> returnList = new ArrayList<>();
         try {
-            decisionTree.visitSelectedItems(itemPath, ((item, column) -> {
+            decisionTree.visitSelectedItems(itemPath, (item, column) -> {
                 // return values from last coordinate
                 if (itemPath.isEmpty()) {
                     item.getChildren().forEach(child -> returnList.add(child.getDisplayLabel()));
                 }
                 return true;
-            }));
+            });
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
         }
@@ -124,7 +127,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         // convert json object to map of strings to integers (values from parameter form)
         jsonObject.forEach((key, value) -> {
             // exclude parameter name
-            if (!key.equals("name") && value instanceof String && ((String) value).length() > 0) {
+            if (!key.equals(PARAMETER_NAME) && value instanceof String && ((String) value).length() > 0) {
                 try {
                     // store new key combination in map
                     selectedValues.put(key, Integer.valueOf((String) value));
@@ -230,7 +233,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
 
         @Override
         public ParameterDefinition newInstance(@Nullable StaplerRequest req, @Nonnull JSONObject formData) {
-            return newInstance(formData.getString("configuration"), formData.getString("name"), formData.getString("description"));
+            return newInstance(formData.getString("configuration"), formData.getString(PARAMETER_NAME), formData.getString("description"));
         }
 
         /**

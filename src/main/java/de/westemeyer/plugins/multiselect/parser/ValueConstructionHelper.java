@@ -13,6 +13,9 @@ import java.util.Map;
  * keep a map inside the parameter values themselves.
  */
 public class ValueConstructionHelper {
+    /** Delimiter for toString output. */
+    private static final String DELIMITER = ", ";
+
     /** Lookup table. */
     private final Map<String, ValueConstructionHelper> lookup = new LinkedHashMap<>();
 
@@ -56,10 +59,10 @@ public class ValueConstructionHelper {
     @Override
     public String toString() {
         if (decisionItem == null) {
-            return String.join(", ", lookup.keySet());
+            return String.join(DELIMITER, lookup.keySet());
         }
 
-        return decisionItem.getValue() + " -> " + String.join(", ", lookup.keySet());
+        return decisionItem.getValue() + " -> " + String.join(DELIMITER, lookup.keySet());
     }
 
     /**
@@ -73,13 +76,13 @@ public class ValueConstructionHelper {
         // iterate lookup table
         lookup.values().forEach(helper -> {
             // get the value...
-            MultiselectDecisionItem decisionItem = helper.getDecisionItem();
+            MultiselectDecisionItem item = helper.getDecisionItem();
 
             // ... add it to list of child items
-            items.add(decisionItem);
+            items.add(item);
 
             // ... and set its children recursively
-            decisionItem.setChildren(helper.createItemList());
+            item.setChildren(helper.createItemList());
         });
 
         // return list of items

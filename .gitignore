@@ -1,4 +1,6 @@
 .idea
 target
 work
-multiselect-parameter-plugin.iml
+*.iml
+.classpath
+.project
