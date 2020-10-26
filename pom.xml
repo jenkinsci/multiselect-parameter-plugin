@@ -105,7 +105,7 @@
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <configuration>
-                    <configLocation>${project.basedir}/.mvn/checkstyle-example.xml</configLocation>
+                    <configLocation>${project.basedir}/.mvn/checkstyle.xml</configLocation>
                     <suppressionsLocation>${project.basedir}/.mvn/checkstyle-suppressions.xml</suppressionsLocation>
                     <includeTestSourceDirectory>false</includeTestSourceDirectory>
                     <sourceDirectories>
