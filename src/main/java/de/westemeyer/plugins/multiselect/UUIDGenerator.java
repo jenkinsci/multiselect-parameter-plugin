@@ -11,10 +11,17 @@ class UUIDGenerator {
     private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABZDEFGHIJKLMNOPQRSTUVWXYZ";
 
     /** Random number generator. */
-    static final SecureRandom numberGenerator = new SecureRandom();
+    private static final SecureRandom NUMBER_GENERATOR = new SecureRandom();
+
+    /**
+     * Private constructor for utility class.
+     */
+    private UUIDGenerator() {
+    }
 
     /**
      * Static method to generate a new UUID.
+     * @param length length of generated UUID
      * @return new UUID
      */
     static String generateUUID(int length) {
@@ -23,7 +30,7 @@ class UUIDGenerator {
 
         // concatenate 30 random characters
         for (int i = 0; i < length; ++i) {
-            uuid.append(ALPHABET.charAt(numberGenerator.nextInt(ALPHABET.length() - 1)));
+            uuid.append(ALPHABET.charAt(NUMBER_GENERATOR.nextInt(ALPHABET.length() - 1)));
         }
 
         // return new string from builder object

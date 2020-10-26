@@ -36,7 +36,7 @@ public class MultiselectDecisionTree implements Serializable {
     private List<MultiselectDecisionItem> itemList = new ArrayList<>();
 
     /** Meta information about build variables/columns. */
-    List<MultiselectVariableDescriptor> variableDescriptions = new ArrayList<>();
+    private List<MultiselectVariableDescriptor> variableDescriptions = new ArrayList<>();
 
     /**
      * Get initial values for column when first displaying list of select boxes in "build with parameters" view.
