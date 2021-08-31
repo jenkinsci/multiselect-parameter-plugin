@@ -12,7 +12,9 @@ import java.util.function.Supplier;
  */
 public enum MultiselectConfigurationFormat {
     /** CSV format. */
-    CSV(CsvParser::new, CsvWriter::new);
+    CSV(CsvParser::new, () -> {
+        return new CsvWriter();
+    });
 
     /** Parser supplier for a format. */
     private final transient Supplier<ConfigParser> parserFactory;

@@ -29,6 +29,7 @@ public class CsvParser implements ConfigParser {
 
     /**
      * Analyze configuration string and transform it into a tree representation of values.
+     *
      * @param config configuration input stream
      * @return tree of variable values
      */
@@ -68,35 +69,35 @@ public class CsvParser implements ConfigParser {
             List<String> subList = Arrays.stream(row).skip(1).collect(Collectors.toList());
 
             // handle each row type separately
-            switch(type) {
-            case HEADER:
-                // store row in headers
-                headers = subList;
-                break;
-            case VARIABLENAME:
-                // store row in variable names used in build environment variables
-                variableNames = subList;
-                break;
-            case TITLE:
-                // store row in titles
-                titles = subList;
-                // row length should not be longer than length of headers
-                if (variableNames != null && subList.size() > variableNames.size()) {
-                    validationResult = Messages.FormValidation_NotEnoughColumns(index);
-                }
-                break;
-            case CONTENT:
-                // row length should not be longer than length of headers
-                if (variableNames != null && subList.size() > variableNames.size()) {
-                    validationResult = Messages.FormValidation_NotEnoughColumns(index);
-                }
-                // combine items in tree
-                addItems(constructionHelper, titles, subList);
-                // reset titles
-                titles = null;
-                break;
-            default:
-                LOGGER.log(Level.INFO, "Invalid configuration value");
+            switch (type) {
+                case HEADER:
+                    // store row in headers
+                    headers = subList;
+                    break;
+                case VARIABLENAME:
+                    // store row in variable names used in build environment variables
+                    variableNames = subList;
+                    break;
+                case TITLE:
+                    // store row in titles
+                    titles = subList;
+                    // row length should not be longer than length of headers
+                    if (variableNames != null && subList.size() > variableNames.size()) {
+                        validationResult = Messages.FormValidation_NotEnoughColumns(index);
+                    }
+                    break;
+                case CONTENT:
+                    // row length should not be longer than length of headers
+                    if (variableNames != null && subList.size() > variableNames.size()) {
+                        validationResult = Messages.FormValidation_NotEnoughColumns(index);
+                    }
+                    // combine items in tree
+                    addItems(constructionHelper, titles, subList);
+                    // reset titles
+                    titles = null;
+                    break;
+                default:
+                    LOGGER.log(Level.INFO, "Invalid configuration value");
             }
 
             // increment row number
@@ -152,16 +153,17 @@ public class CsvParser implements ConfigParser {
 
     /**
      * Add content items to list of items.
+     *
      * @param rootHelper root construction helper with lookup tables
-     * @param headers list of headers
-     * @param values list of values
+     * @param headers    list of headers
+     * @param values     list of values
      */
     private void addItems(ValueConstructionHelper rootHelper, List<String> headers, List<String> values) {
         // initialize helper object iterator with root object
         ValueConstructionHelper currentHelper = rootHelper;
 
         // iterate list of values
-        for (int i = 0;i < values.size(); ++i) {
+        for (int i = 0; i < values.size(); ++i) {
             // get value for column of index i
             String value = values.get(i);
 
@@ -180,7 +182,8 @@ public class CsvParser implements ConfigParser {
             // if no value helper has been found...
             if (valueHelper == null) {
                 // ... create a new one
-                valueHelper = new ValueConstructionHelper(new MultiselectDecisionItem(currentHelper.getDecisionItem(), title, value));
+                valueHelper = new ValueConstructionHelper(
+                        new MultiselectDecisionItem(currentHelper.getDecisionItem(), title, value));
 
                 // ... and add it to lookup table of current helper
                 currentHelper.addValueHelper(value, valueHelper);
@@ -201,7 +204,10 @@ public class CsvParser implements ConfigParser {
         VARIABLENAME("V"),
         /** Optional titles for a following content-row. */
         TITLE("T"),
-        /** Content row containing values for variables, defaulting also as titles in dropdown boxes in case titles are missing. */
+        /**
+         * Content row containing values for variables, defaulting also as titles in dropdown boxes in case titles are
+         * missing.
+         */
         CONTENT("C"),
         /** Invalid row content detected. */
         UNKNOWN("");
@@ -211,6 +217,7 @@ public class CsvParser implements ConfigParser {
 
         /**
          * Private constructor for this enum.
+         *
          * @param marker the individual marker character for a row type
          */
         RowType(String marker) {
@@ -219,6 +226,7 @@ public class CsvParser implements ConfigParser {
 
         /**
          * Determine the content type of a row by its marker character.
+         *
          * @param marker the individual marker character for a row type
          * @return the matching enum value or UNKNOWN
          */

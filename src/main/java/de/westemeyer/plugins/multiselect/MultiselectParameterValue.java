@@ -8,6 +8,7 @@ import hudson.util.VariableResolver;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Parameter value is a map of keys and values, representing the build environment variables and
@@ -20,6 +21,11 @@ public class MultiselectParameterValue extends ParameterValue {
     /** The values selected in "build with parameters" step. */
     private final Map<String, String> selectedValues;
 
+    /**
+     * Create a new MultiselectParameterValue object.
+     * @param name name of parameter
+     * @param selectedValues selected values in select boxes
+     */
     @DataBoundConstructor
     public MultiselectParameterValue(String name, Map<String, String> selectedValues) {
         super(name, null);
@@ -52,5 +58,25 @@ public class MultiselectParameterValue extends ParameterValue {
     public VariableResolver<String> createVariableResolver(AbstractBuild<?, ?> build) {
         // Hide the default single build variable by supplying null as a value
         return s -> null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        MultiselectParameterValue that = (MultiselectParameterValue) o;
+        return selectedValues.equals(that.selectedValues);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), selectedValues);
     }
 }
