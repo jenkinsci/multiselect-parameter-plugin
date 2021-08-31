@@ -1,7 +1,7 @@
 package de.westemeyer.plugins.multiselect.parser;
 
 import de.westemeyer.plugins.multiselect.MultiselectDecisionTree;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,12 +15,19 @@ class CsvParserTest {
     /** Second input csv for tests without title rows. */
     private static final String INPUT_NO_TITLES = "H,Type,Sport,Country,Team\nV,SELECTED_TYPE,SELECTED_SPORT,SELECTED_COUNTRY,SELECTED_TEAM\nC,Water,Wakeboarding,Germany,WSC Duisburg Rheinhausen\nC,Water,Wakeboarding,Germany,WSC Paderborn\nC,Water,Wakeboarding,Austria,WSC Wien\nC,Water,Waterball,Germany,Waterball Team\nC,Water,Surfing,England,Bristol Surf Team\nC,Ball,Football,France,Paris St. Germain\nC,Ball,Handball,Germany,THW Kiel\n";
 
+    /** Input from issue JENKINS-66486. */
+    private static final String INPUT_QUOTED = "H,Component,Container,Machine\n"
+                                               + "V,SELECTED_COMPONENT,SELECTED_CONTAINER,MACHINES\n"
+                                               + "C,component1,container1,\"machine1,machine2\"\n"
+                                               + "C,component2,container1,\"machine3,machine4\"\n"
+                                               + "C,component3,container2,\"machine1,machine2\"\n";
+
     @ParameterizedTest
-    @ValueSource(strings = {INPUT_CSV, INPUT_NO_TITLES, "", "V,A,B\n", "H,Hello,World\n", "C,a,b\n"})
+    @ValueSource(strings = {INPUT_CSV, INPUT_NO_TITLES, "", "V,A,B\n", "H,Hello,World\n", "C,a,b\n", INPUT_QUOTED})
     void testParser(String input) throws Exception {
         MultiselectDecisionTree decisionTree = getDecisionTree(input, true);
 
-        Assert.assertEquals(input, decisionTree.toString());
+        Assertions.assertEquals(input, decisionTree.toString());
     }
 
     @Test
@@ -35,7 +42,7 @@ class CsvParserTest {
         // create string output stream
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
             // create new CSV writer instance
-            CsvWriter writer = new CsvWriter(",", "\n");
+            CsvWriter writer = new CsvWriter();
 
             // serialize the CSV result to output stream
             decisionTree.serialize(writer, byteArrayOutputStream);
@@ -43,9 +50,9 @@ class CsvParserTest {
             // assert symmetrical parsing/serialising
             String csvOutput = byteArrayOutputStream.toString();
             if (assertEquality) {
-                Assert.assertEquals(input, csvOutput);
+                Assertions.assertEquals(input, csvOutput);
             } else {
-                Assert.assertNotEquals(input, csvOutput);
+                Assertions.assertNotEquals(input, csvOutput);
             }
         }
         return decisionTree;

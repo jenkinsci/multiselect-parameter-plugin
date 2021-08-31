@@ -84,5 +84,4 @@ public class MultiselectVariableDescriptor implements Serializable {
     public int getColumnIndex() {
         return columnIndex;
     }
-
 }

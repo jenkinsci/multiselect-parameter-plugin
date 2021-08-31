@@ -1,7 +1,6 @@
 package de.westemeyer.plugins.multiselect;
 
 import de.westemeyer.plugins.multiselect.parser.ConfigSerialization;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,11 +36,11 @@ class MultiselectDecisionTreeTest {
         Map<String, Integer> selection = new HashMap<>();
 
         Map<String, String> properties = tree.resolveValues(selection);
-        Assert.assertEquals(0, properties.size());
+        Assertions.assertEquals(0, properties.size());
 
         selection.put("SELECTED_REPOSITORY", 0);
         properties = tree.resolveValues(selection);
-        Assert.assertEquals(0, properties.size());
+        Assertions.assertEquals(0, properties.size());
 
         selection.put(SELECTED_TYPE, 0);
         selection.put(SELECTED_SPORT, 0);
@@ -51,11 +50,11 @@ class MultiselectDecisionTreeTest {
 
         selection.put(SELECTED_TEAM, 0);
         properties = tree.resolveValues(selection);
-        Assert.assertEquals(4, properties.size());
-        Assert.assertEquals("Water", properties.get(SELECTED_TYPE));
-        Assert.assertEquals("Wakeboarding", properties.get(SELECTED_SPORT));
-        Assert.assertEquals("Austria", properties.get(SELECTED_COUNTRY));
-        Assert.assertEquals("WSC Wien", properties.get(SELECTED_TEAM));
+        Assertions.assertEquals(4, properties.size());
+        Assertions.assertEquals("Water", properties.get(SELECTED_TYPE));
+        Assertions.assertEquals("Wakeboarding", properties.get(SELECTED_SPORT));
+        Assertions.assertEquals("Austria", properties.get(SELECTED_COUNTRY));
+        Assertions.assertEquals("WSC Wien", properties.get(SELECTED_TEAM));
     }
 
     @Test
@@ -69,7 +68,7 @@ class MultiselectDecisionTreeTest {
             }
         };
 
-        Assert.assertEquals("", decisionTree.toString());
+        Assertions.assertEquals("", decisionTree.toString());
     }
 
     @ParameterizedTest
@@ -77,7 +76,7 @@ class MultiselectDecisionTreeTest {
     void initialValuesForColumn(int column, String values) {
         MultiselectDecisionTree tree = MultiselectDecisionTree.parse(INPUT_CSV);
         List<String> initialValuesForColumn = tree.getInitialValuesForColumn(column).stream().map(MultiselectDecisionItem::getValue).collect(Collectors.toList());
-        Assert.assertEquals(Arrays.asList(values.split(";")), initialValuesForColumn);
+        Assertions.assertEquals(Arrays.asList(values.split(";")), initialValuesForColumn);
     }
 
     @Test
@@ -91,6 +90,6 @@ class MultiselectDecisionTreeTest {
             }
         };
 
-        Assert.assertEquals(0, decisionTree.getInitialValuesForColumn(0).size());
+        Assertions.assertEquals(0, decisionTree.getInitialValuesForColumn(0).size());
     }
 }

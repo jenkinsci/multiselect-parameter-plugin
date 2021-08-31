@@ -1,47 +1,25 @@
 package de.westemeyer.plugins.multiselect.parser;
 
+import com.opencsv.CSVWriter;
 import de.westemeyer.plugins.multiselect.MultiselectDecisionItem;
 import de.westemeyer.plugins.multiselect.MultiselectDecisionItemVisitor;
 import de.westemeyer.plugins.multiselect.MultiselectDecisionTree;
 import de.westemeyer.plugins.multiselect.MultiselectVariableDescriptor;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * Writer class to print tree to CSV.
  */
 public class CsvWriter implements ConfigSerialization {
-    /** Delimiter char to use. */
-    private final String delimiter;
-
-    /** The end of line character to use. */
-    private final String endOfLineCharacter;
-
-    /**
-     * Create new default CSV writer object.
-     */
-    public CsvWriter() {
-        this(",", "\n");
-    }
-
-    /**
-     * Create new CSV writer object.
-     * @param delimiter delimiter char to use.
-     * @param endOfLineCharacter the end of line character to use
-     */
-    public CsvWriter(String delimiter, String endOfLineCharacter) {
-        this.delimiter = delimiter;
-        this.endOfLineCharacter = endOfLineCharacter;
-    }
-
     /**
      * Serialize a variable content tree as CSV text.
+     *
      * @param decisionTree the content tree to write as CSV
      * @param outputStream the output stream to write to
      * @throws Exception in case writing to the output stream fails
@@ -49,7 +27,8 @@ public class CsvWriter implements ConfigSerialization {
     @Override
     public void serialize(MultiselectDecisionTree decisionTree, OutputStream outputStream) throws Exception {
         // wrap output stream in writer object
-        try (OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+        try (OutputStreamWriter streamWriter = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+             CSVWriter writer = new CSVWriter(streamWriter)) {
             // write header row content
             writeList("H", decisionTree.getVariableLabels(), writer);
 
@@ -57,59 +36,56 @@ public class CsvWriter implements ConfigSerialization {
             writeList("V", decisionTree.getVariableNames(), writer);
 
             // print tree to CSV by applying visitor
-            decisionTree.visitSubTree(new CvwWriterVisitor(writer, delimiter, endOfLineCharacter));
+            decisionTree.visitSubTree(new CvwWriterVisitor(writer));
         }
     }
 
     /**
      * Write a list of entries only if variables have been defined already.
+     *
      * @param prefix row prefix "H" or "V"
      * @param values list of string values
      * @param writer output stream writer to write to
-     * @throws IOException in case writing to writer fails
      */
-    private void writeList(String prefix, List<String> values, OutputStreamWriter writer) throws IOException {
+    private void writeList(String prefix, List<String> values, CSVWriter writer) {
         // only write row in case variables are defined
         if (values != null && !values.isEmpty()) {
-            // write first character in CSV
-            writer.write(prefix);
+            // create a new string array with enough space for all columns
+            String[] line = new String[values.size() + 1];
+
+            // first column is filled with prefix
+            line[0] = prefix;
+
+            // start with second column (index 1)
+            int i = 1;
 
             // iterate variable descriptors
             for (String value : values) {
                 // write header row content
-                writer.write(delimiter + value);
+                line[i] = value;
+                ++i;
             }
 
-            // terminate header row
-            writer.write(endOfLineCharacter);
+            // write CSV row
+            writer.writeNext(line, false);
         }
     }
 
     /**
-     * Visitor class to write tree to CSV. Traverse tree until leaf node is reached before
-     * going all the way back to the root node to construct two complete lines of labels
-     * and values.
+     * Visitor class to write tree to CSV. Traverse tree until leaf node is reached before going all the way back to the
+     * root node to construct two complete lines of labels and values.
      */
     private static class CvwWriterVisitor implements MultiselectDecisionItemVisitor {
         /** Writer to use. */
-        private final Writer writer;
-
-        /** Delimiter character for CSV. */
-        private final String delimiter;
-
-        /** The end of line character to use. */
-        private final String endOfLineCharacter;
+        private final CSVWriter writer;
 
         /**
          * Create new visitor object.
+         *
          * @param writer writer to use
-         * @param delimiter delimiter character for CSV
-         * @param endOfLineCharacter the end of line character to use
          */
-        private CvwWriterVisitor(Writer writer, String delimiter, String endOfLineCharacter) {
+        private CvwWriterVisitor(CSVWriter writer) {
             this.writer = writer;
-            this.delimiter = delimiter;
-            this.endOfLineCharacter = endOfLineCharacter;
         }
 
         @Override
@@ -117,23 +93,26 @@ public class CsvWriter implements ConfigSerialization {
             // wait until a leaf node is found before acting
             if (item.isLeaf()) {
                 // initialise empty rows
-                String labels = "";
-                String values = "";
+                List<String> labels = new ArrayList<>();
+                List<String> values = new ArrayList<>();
+
+                // variable keeps track, whether at least one label in row was is not empty
+                boolean hasLabels = false;
 
                 do {
-                    // prepend values/labels while going back to root of tree
-                    labels = concatenateValue(item, labels, MultiselectDecisionItem::getLabel);
-                    values = concatenateValue(item, values, MultiselectDecisionItem::getValue);
+                    // append values/labels while going back to root of tree
+                    hasLabels |= appendValue(labels, item.getLabel());
+                    appendValue(values, item.getValue());
 
                     // advance down the tree to its root
                     item = item.getParent();
                 } while (item != null);
 
                 // print both results to output writer
-                if (column != null && labels.length() > column.getColumnIndex()) {
-                    writer.write("T" + delimiter + labels + endOfLineCharacter);
+                if (hasLabels) {
+                    reverseAndWrite("T", labels);
                 }
-                writer.write("C" + delimiter + values + endOfLineCharacter);
+                reverseAndWrite("C", values);
             }
 
             // never stop visiting branches (except when exception occurs)
@@ -141,14 +120,38 @@ public class CsvWriter implements ConfigSerialization {
         }
 
         /**
-         * Concatenate string values.
-         * @param item multiselect item to get value or title from
-         * @param value current value string to prepend to
-         * @param function decide whether to use value or label/title
-         * @return original string, prepended with item content
+         * Reverse input list and write CSV row.
+         *
+         * @param type   row type to prepend in first column of CSV row
+         * @param values column values
          */
-        private String concatenateValue(MultiselectDecisionItem item, String value, Function<MultiselectDecisionItem, String> function) {
-            return function.apply(item) + (item.isLeaf() ? "" : (delimiter + value));
+        private void reverseAndWrite(String type, List<String> values) {
+            // append type at end of list
+            values.add(type);
+
+            // reverse list, as it has been filled from leaf to root node
+            Collections.reverse(values);
+
+            // convert to array
+            String[] labelsArray = values.toArray(new String[0]);
+
+            // write row to stream
+            writer.writeNext(labelsArray, false);
+        }
+
+        /**
+         * Append string values.
+         *
+         * @param columns list of values for columns
+         * @param value   value to append
+         * @return whether appended value was not null or empty
+         */
+        boolean appendValue(List<String> columns, String value) {
+            if (value != null) {
+                columns.add(value);
+                return !value.isEmpty();
+            }
+            return false;
         }
     }
 }
