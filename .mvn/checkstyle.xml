@@ -77,7 +77,7 @@
   <module name="NewlineAtEndOfFile"/>
   <module name="JavadocPackage"/>
   <module name="SuppressionFilter">
-    <property name="file" value="/Users/s.westemeyer/Documents/source/thirdparty/multiselect-parameter-plugin/.mvn/checkstyle-suppressions.xml"/>
+    <property name="file" value=".mvn/checkstyle-suppressions.xml"/>
   </module>
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern" value=".*Test\.java"/>
