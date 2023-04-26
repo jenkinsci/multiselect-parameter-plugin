@@ -35,6 +35,17 @@ class CsvParserTest {
         getDecisionTree("T,a,b\n", false);
     }
 
+    @Test
+    void unknownRowType() throws Exception {
+        getDecisionTree("X,a,b\n", false);
+    }
+
+    @Test
+    void invalidColumnCount() throws Exception {
+        MultiselectDecisionTree decisionTree = getDecisionTree("H\nT\n", false);
+        Assertions.assertTrue(decisionTree.getVariableLabels().isEmpty());
+    }
+
     private MultiselectDecisionTree getDecisionTree(String input, boolean assertEquality) throws Exception {
         // parse input stream to tree meta object
         MultiselectDecisionTree decisionTree = MultiselectDecisionTree.parse(input);

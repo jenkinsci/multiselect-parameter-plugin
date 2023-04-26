@@ -10,7 +10,6 @@ public interface MultiselectDecisionItemVisitor {
      * @param item the current item in tree
      * @param column column meta information
      * @return {@code false} in case walking through the item tree shall be aborted
-     * @throws Exception in case an error occurred in this method (also aborting walk through items)
      */
-    boolean visit(MultiselectDecisionItem item, MultiselectVariableDescriptor column) throws Exception;
+    boolean visit(MultiselectDecisionItem item, MultiselectVariableDescriptor column);
 }

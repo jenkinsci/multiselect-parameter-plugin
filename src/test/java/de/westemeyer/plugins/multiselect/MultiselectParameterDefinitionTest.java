@@ -1,17 +1,22 @@
 package de.westemeyer.plugins.multiselect;
 
+import de.westemeyer.plugins.multiselect.parser.MultiselectParameterParser;
 import hudson.EnvVars;
 import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
-import org.junit.jupiter.api.Assertions;
+import net.sf.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 
 import static de.westemeyer.plugins.multiselect.MultiselectConfigurationFormat.CSV;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class MultiselectParameterDefinitionTest {
     /** Input csv for tests. */
@@ -53,10 +58,10 @@ class MultiselectParameterDefinitionTest {
     @Test
     void constructor() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
-        Assertions.assertEquals(CSV, definition.getFormat());
-        Assertions.assertEquals(INPUT, definition.getDecisionTree());
+        assertEquals(CSV, definition.getFormat());
+        assertEquals(INPUT, definition.getDecisionTree());
         definition.setDecisionTree(VALIDATION1);
-        Assertions.assertEquals(VALIDATION1, definition.getDecisionTree());
+        assertEquals(VALIDATION1, definition.getDecisionTree());
         // Currently there is only just one supported format. Add different value later, assert format change.
         definition.setFormat(CSV);
     }
@@ -64,79 +69,135 @@ class MultiselectParameterDefinitionTest {
     @Test
     void getItemList() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
-        Integer[] coordinates = new Integer[] {0, 0};
+        Integer[] coordinates = new Integer[]{0, 0};
         String[] itemList = definition.getItemList(coordinates);
-        Assertions.assertEquals(2, itemList.length);
-        Assertions.assertEquals(GERMANY, itemList[0]);
-        Assertions.assertEquals("Austria", itemList[1]);
+        assertEquals(2, itemList.length);
+        assertEquals(GERMANY, itemList[0]);
+        assertEquals("Austria", itemList[1]);
+        definition.setDecisionTree(null);
+        itemList = definition.getItemList(coordinates);
+        assertEquals(0, itemList.length);
     }
 
     @Test
     void getDefaultParameterValue() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
         ParameterValue defaultParameterValue = definition.getDefaultParameterValue();
-        Assertions.assertNotNull(defaultParameterValue);
-        Assertions.assertEquals(NAME, defaultParameterValue.getName());
+        assertNotNull(defaultParameterValue);
+        assertEquals(NAME, defaultParameterValue.getName());
         Object value = defaultParameterValue.getValue();
-        Assertions.assertNotNull(value);
-        Assertions.assertEquals(EMPTY_TO_STRING_RESULT, value.toString());
+        assertNotNull(value);
+        assertEquals(EMPTY_TO_STRING_RESULT, value.toString());
     }
 
     @Test
     void createValue() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
         ParameterValue defaultParameterValue = definition.createValue((StaplerRequest) null);
-        Assertions.assertNotNull(defaultParameterValue);
-        Assertions.assertEquals(NAME, defaultParameterValue.getName());
+        assertNotNull(defaultParameterValue);
+        assertEquals(NAME, defaultParameterValue.getName());
         Object parameterValueContent = defaultParameterValue.getValue();
-        Assertions.assertNotNull(parameterValueContent);
-        Assertions.assertEquals(EMPTY_TO_STRING_RESULT, parameterValueContent.toString());
+        assertNotNull(parameterValueContent);
+        assertEquals(EMPTY_TO_STRING_RESULT, parameterValueContent.toString());
 
-        Map<String, Object> values = new HashMap<>();
+        JSONObject values = new JSONObject();
         values.put(SELECTED_TYPE, "0");
         values.put(SELECTED_SPORT, "1");
         values.put(SELECTED_COUNTRY, "0");
         values.put(SELECTED_TEAM, "0");
-        MultiselectParameterValue value = definition.createValue(values);
+        values.put("name", "Hugo");
+        values.put("integer", 1);
+        values.put("empty", "");
+        MultiselectParameterValue value = (MultiselectParameterValue) definition.createValue(null, values);
+        assertNotNull(value);
         EnvVars vars = new EnvVars();
         value.buildEnvironment(null, vars);
-        Assertions.assertEquals("Water", vars.get(SELECTED_TYPE));
-        Assertions.assertEquals("Waterball", vars.get(SELECTED_SPORT));
-        Assertions.assertEquals(GERMANY, vars.get(SELECTED_COUNTRY));
-        Assertions.assertEquals("Waterball Team", vars.get(SELECTED_TEAM));
+        assertEquals("Water", vars.get(SELECTED_TYPE));
+        assertEquals("Waterball", vars.get(SELECTED_SPORT));
+        assertEquals(GERMANY, vars.get(SELECTED_COUNTRY));
+        assertEquals("Waterball Team", vars.get(SELECTED_TEAM));
+
+        assertEquals(4, value.getSelectedValues().size());
+
+        definition.setDecisionTree(null);
+        value = definition.createValue(values);
+        assertEquals(0, value.getSelectedValues().size());
+
+        values.put("go ahead", "throw an exception");
+        assertDoesNotThrow(() -> definition.createValue(values));
     }
 
     @Test
     void doCheckConfiguration() throws IOException {
         MultiselectParameterDefinition.DescriptorImpl descriptor = new MultiselectParameterDefinition.DescriptorImpl();
         FormValidation formValidation = descriptor.doCheckConfiguration(INPUT_STRING);
-        Assertions.assertEquals(FormValidation.Kind.OK, formValidation.kind);
-        Assertions.assertNull(formValidation.getMessage());
+        assertEquals(FormValidation.Kind.OK, formValidation.kind);
+        assertNull(formValidation.getMessage());
         formValidation = descriptor.doCheckConfiguration(VALIDATION1_STRING);
-        Assertions.assertEquals(Messages.FormValidation_NotEnoughColumns(3), formValidation.getMessage());
-        Assertions.assertEquals(FormValidation.Kind.WARNING, formValidation.kind);
+        assertEquals(Messages.FormValidation_NotEnoughColumns(3), formValidation.getMessage());
+        assertEquals(FormValidation.Kind.WARNING, formValidation.kind);
         formValidation = descriptor.doCheckConfiguration("");
-        Assertions.assertEquals(Messages.FormValidation_ConfigurationIsEmpty(), formValidation.getMessage());
-        Assertions.assertEquals(FormValidation.Kind.ERROR, formValidation.kind);
+        assertEquals(Messages.FormValidation_ConfigurationIsEmpty(), formValidation.getMessage());
+        assertEquals(FormValidation.Kind.ERROR, formValidation.kind);
     }
 
     @Test
     void getDisplayName() {
         MultiselectParameterDefinition.DescriptorImpl descriptor = new MultiselectParameterDefinition.DescriptorImpl();
-        Assertions.assertEquals(Messages.MultiselectParameterDefinition_DisplayName(), descriptor.getDisplayName());
+        assertEquals(Messages.MultiselectParameterDefinition_DisplayName(), descriptor.getDisplayName());
     }
 
     @Test
     void getUuid() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, null, CSV);
-        Assertions.assertNotNull(definition.getUuid());
-        Assertions.assertEquals(15, definition.getUuid().length());
+        assertNotNull(definition.getUuid());
+        assertEquals(15, definition.getUuid().length());
     }
 
     @Test
     void newInstance() {
+        MultiselectParameterDefinition definition = MultiselectParameterDefinition.DescriptorImpl.newInstance(INPUT_STRING, "parametername", DESCRIPTION, new MultiselectParameterParser(CSV));
+        assertNotNull(definition.getDecisionTree());
+        assertEquals(INPUT_STRING, definition.getDecisionTree().toString());
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("configuration", INPUT_STRING);
+        jsonObject.put("name", "parametername");
+        jsonObject.put("description", DESCRIPTION);
         MultiselectParameterDefinition.DescriptorImpl descriptor = new MultiselectParameterDefinition.DescriptorImpl();
-        MultiselectParameterDefinition definition = descriptor.newInstance(INPUT_STRING, "parametername", DESCRIPTION);
-        Assertions.assertEquals(INPUT_STRING, definition.getDecisionTree().toString());
+        MultiselectParameterDefinition parameterDefinition = (MultiselectParameterDefinition) descriptor.newInstance(null, jsonObject);
+        MultiselectDecisionTree decisionTree = parameterDefinition.getDecisionTree();
+        assertNotNull(decisionTree);
+        assertEquals(definition.getDecisionTree().toString(), decisionTree.toString());
+        assertEquals(definition.getDescription(), parameterDefinition.getDescription());
+        assertEquals(definition.getName(), parameterDefinition.getName());
+
+        MultiselectParameterParser parser = new MultiselectParameterParser(CSV) {
+            @Override
+            public MultiselectDecisionTree parseConfiguration(String input) throws IOException {
+                throw new IOException("Need to test the exception here!");
+            }
+        };
+        assertDoesNotThrow(() -> MultiselectParameterDefinition.DescriptorImpl.newInstance(INPUT_STRING, "parametername", DESCRIPTION, parser));
+    }
+
+    @SuppressWarnings({"EqualsWithItself", "AssertBetweenInconvertibleTypes"})
+    @Test
+    void testEquals() {
+        MultiselectParameterDefinition value = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
+        assertNotEquals(value, this);
+        assertEquals(value, value);
+        assertNotEquals(value, new MultiselectParameterDefinition("Other name", DESCRIPTION, INPUT, CSV));
+        MultiselectParameterValue sameNameDifferentContent = new MultiselectParameterValue("Hello", Collections.singletonMap("key", "value"));
+        assertNotEquals(value, sameNameDifferentContent);
+        MultiselectParameterDefinition actual = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
+        actual.setUuid(value.getUuid());
+        assertEquals(value, actual);
+    }
+
+    @Test
+    void testHashCode() {
+        MultiselectParameterDefinition value = new MultiselectParameterDefinition(NAME, DESCRIPTION);
+        value.setUuid("FDcYsiejIswOtJc");
+        assertEquals(-993358548, value.hashCode());
     }
 }

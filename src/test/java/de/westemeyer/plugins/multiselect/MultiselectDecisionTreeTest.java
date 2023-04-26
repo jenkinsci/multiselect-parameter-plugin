@@ -1,6 +1,7 @@
 package de.westemeyer.plugins.multiselect;
 
 import de.westemeyer.plugins.multiselect.parser.ConfigSerialization;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,7 +32,7 @@ class MultiselectDecisionTreeTest {
     private static final String SELECTED_TEAM = "SELECTED_TEAM";
 
     @Test
-    void resolveValues() throws Exception {
+    void resolveValues() {
         MultiselectDecisionTree tree = MultiselectDecisionTree.parse(INPUT_CSV);
         Map<String, Integer> selection = new HashMap<>();
 
@@ -55,11 +56,13 @@ class MultiselectDecisionTreeTest {
         Assertions.assertEquals("Wakeboarding", properties.get(SELECTED_SPORT));
         Assertions.assertEquals("Austria", properties.get(SELECTED_COUNTRY));
         Assertions.assertEquals("WSC Wien", properties.get(SELECTED_TEAM));
+
+        Assertions.assertEquals(4, tree.getVariableDescriptions().size());
     }
 
     @Test
     void exceptionInToString() {
-        MultiselectDecisionTree decisionTree = new MultiselectDecisionTree(){
+        MultiselectDecisionTree decisionTree = new MultiselectDecisionTree() {
             private static final long serialVersionUID = -2603343900904810385L;
 
             @Override
@@ -72,7 +75,7 @@ class MultiselectDecisionTreeTest {
     }
 
     @ParameterizedTest
-    @CsvSource ({"0,Water;Ball", "1,Wakeboarding;Waterball;Surfing", "2,Germany;Austria", "3,WSC Duisburg Rheinhausen;WSC Paderborn"})
+    @CsvSource({"0,Water;Ball", "1,Wakeboarding;Waterball;Surfing", "2,Germany;Austria", "3,WSC Duisburg Rheinhausen;WSC Paderborn"})
     void initialValuesForColumn(int column, String values) {
         MultiselectDecisionTree tree = MultiselectDecisionTree.parse(INPUT_CSV);
         List<String> initialValuesForColumn = tree.getInitialValuesForColumn(column).stream().map(MultiselectDecisionItem::getValue).collect(Collectors.toList());
@@ -81,10 +84,11 @@ class MultiselectDecisionTreeTest {
 
     @Test
     void emptyItemListInitialValues() {
-        MultiselectDecisionTree decisionTree = new MultiselectDecisionTree(){
+        MultiselectDecisionTree decisionTree = new MultiselectDecisionTree() {
             private static final long serialVersionUID = -2603343900904810385L;
 
             @Override
+            @NonNull
             public List<MultiselectDecisionItem> getItemList() {
                 return Collections.emptyList();
             }

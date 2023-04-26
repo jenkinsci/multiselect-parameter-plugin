@@ -76,4 +76,12 @@ class MultiselectDecisionItemTest {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0, 0, 0);
         Assertions.assertEquals("MultiselectDecisionItem{label='', value='WSC Duisburg Rheinhausen', children=[]}", item.toString());
     }
+
+    @Test
+    void testSetter() {
+        MultiselectDecisionItem item = new MultiselectDecisionItem(null, "Hello", "Value");
+        Assertions.assertEquals("Hello", item.getLabel());
+        item.setLabel("Hullo");
+        Assertions.assertEquals("Hullo", item.getLabel());
+    }
 }

@@ -5,7 +5,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.ParameterValue;
 import hudson.model.Run;
 import hudson.util.VariableResolver;
-import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 import java.util.Map;
 import java.util.Objects;
@@ -19,26 +19,36 @@ public class MultiselectParameterValue extends ParameterValue {
     private static final long serialVersionUID = -5612496743376284422L;
 
     /** The values selected in "build with parameters" step. */
-    private final Map<String, String> selectedValues;
+    private Map<String, String> selectedValues;
 
     /**
      * Create a new MultiselectParameterValue object.
      * @param name name of parameter
+     */
+    public MultiselectParameterValue(String name) {
+        super(name, null);
+    }
+
+    /**
+     * Create a new MultiselectParameterValue object.
+     * @param name           name of parameter
      * @param selectedValues selected values in select boxes
      */
-    @DataBoundConstructor
     public MultiselectParameterValue(String name, Map<String, String> selectedValues) {
-        super(name, null);
+        this(name);
         this.selectedValues = selectedValues;
     }
 
     @Override
     public void buildEnvironment(Run<?, ?> build, EnvVars env) {
         // iterate all properties
-        for(Map.Entry<String, String> entry : getSelectedValues().entrySet()) {
-            // copy key/value combination to target map by applying consumer
-            env.put(entry.getKey(), entry.getValue());
-        }
+        // copy key/value combination to target map by applying consumer
+        env.putAll(getSelectedValues());
+    }
+
+    @DataBoundSetter
+    public void setSelectedValues(Map<String, String> selectedValues) {
+        this.selectedValues = selectedValues;
     }
 
     /**

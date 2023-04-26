@@ -1,5 +1,8 @@
 package de.westemeyer.plugins.multiselect;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,13 +14,13 @@ public class MultiselectVariableDescriptor implements Serializable {
     private static final long serialVersionUID = -3664707568849231781L;
 
     /** Variable label. */
-    private final String label;
+    private String label;
 
     /** Variable name. */
-    private final String variableName;
+    private String variableName;
 
     /** Column index of this column. */
-    private final int columnIndex;
+    private int columnIndex;
 
     /** UUID for use in HTML view. */
     private final String uuid = UUIDGenerator.generateUUID(30);
@@ -31,6 +34,7 @@ public class MultiselectVariableDescriptor implements Serializable {
      * @param variableName variable name
      * @param columnIndex index of this column
      */
+    @DataBoundConstructor
     public MultiselectVariableDescriptor(String label, String variableName, int columnIndex) {
         this.label = label;
         this.variableName = variableName;
@@ -45,12 +49,22 @@ public class MultiselectVariableDescriptor implements Serializable {
         return label;
     }
 
+    @DataBoundSetter
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     /**
      * Get variable name.
      * @return variable name
      */
     public String getVariableName() {
         return variableName;
+    }
+
+    @DataBoundSetter
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
     }
 
     /**
@@ -83,5 +97,9 @@ public class MultiselectVariableDescriptor implements Serializable {
      */
     public int getColumnIndex() {
         return columnIndex;
+    }
+
+    public void setColumnIndex(int columnIndex) {
+        this.columnIndex = columnIndex;
     }
 }
