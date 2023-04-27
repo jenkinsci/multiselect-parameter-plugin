@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout
@@ -26,4 +26,4 @@ jobs:
       - name: Upload code coverage
         if: ${{ success() }}
         run: |
-            bash <(curl -s https://codecov.io/bash)
+          bash <(curl -s https://codecov.io/bash)
