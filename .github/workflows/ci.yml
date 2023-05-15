@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: 11
       - name: Build with Maven
-        run: mvn -B -Dgpg.skip jacoco:prepare-agent verify
+        run: mvn -B -Dgpg.skip jacoco:prepare-agent verify jacoco:report
       - name: Upload code coverage
         if: ${{ success() }}
         run: |
