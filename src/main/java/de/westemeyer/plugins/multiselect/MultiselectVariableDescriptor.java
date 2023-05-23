@@ -30,9 +30,9 @@ public class MultiselectVariableDescriptor implements Serializable {
 
     /**
      * Create new variable description object.
-     * @param label variable label
+     * @param label        variable label
      * @param variableName variable name
-     * @param columnIndex index of this column
+     * @param columnIndex  index of this column
      */
     @DataBoundConstructor
     public MultiselectVariableDescriptor(String label, String variableName, int columnIndex) {

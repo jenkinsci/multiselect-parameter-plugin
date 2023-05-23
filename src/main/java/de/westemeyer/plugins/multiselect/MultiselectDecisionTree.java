@@ -2,6 +2,7 @@ package de.westemeyer.plugins.multiselect;
 
 import de.westemeyer.plugins.multiselect.parser.ConfigSerialization;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import java.io.ByteArrayInputStream;
@@ -41,6 +42,12 @@ public class MultiselectDecisionTree implements Serializable {
     /** Meta information about build variables/columns. */
     @NonNull
     private List<MultiselectVariableDescriptor> variableDescriptions = new ArrayList<>();
+
+    @DataBoundConstructor
+    public MultiselectDecisionTree() {
+        // empty constructor is necessary, otherwise pipelines can not create
+        // structured configuration (using setter methods)
+    }
 
     /**
      * Get initial values for column when first displaying list of select boxes in "build with parameters" view.

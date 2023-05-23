@@ -42,7 +42,7 @@ public class CsvParser implements ConfigParser {
         InputStreamReader reader = new InputStreamReader(config, StandardCharsets.UTF_8);
 
         // create a new csv reader object
-        try (CSVReader csvReader = new CSVReaderBuilder(reader).build()) {
+        try (CSVReader csvReader = createCsvReader(reader)) {
 
             // references for different kinds of rows
             List<String> headers = null;
@@ -137,11 +137,15 @@ public class CsvParser implements ConfigParser {
         return decisionTree;
     }
 
+    protected CSVReader createCsvReader(InputStreamReader reader) {
+        return new CSVReaderBuilder(reader).build();
+    }
+
     /**
      * Validate the lists of variable names and values. List of values may not be longer than the list of variable names.
      * @param variableNames list of variable names
-     * @param index current column number
-     * @param subList list of values
+     * @param index         current column number
+     * @param subList       list of values
      */
     private void ensureMatchingListLengths(List<String> variableNames, int index, List<String> subList) {
         if (variableNames != null && subList.size() > variableNames.size()) {

@@ -19,6 +19,6 @@ class CvwWriterVisitorTest {
         assertTrue(cvwWriterVisitor.appendValue(result, "Hello"));
         assertEquals(2, result.size());
         assertFalse(cvwWriterVisitor.appendValue(result, null));
-        assertEquals(2, result.size());
+        assertEquals(3, result.size());
     }
 }

@@ -82,10 +82,7 @@ class CvwWriterVisitor implements MultiselectDecisionItemVisitor {
      * @return whether appended value was not null or empty
      */
     boolean appendValue(List<String> columns, String value) {
-        if (value != null) {
-            columns.add(value);
-            return !value.isEmpty();
-        }
-        return false;
+        columns.add(value);
+        return !(value == null || value.isEmpty());
     }
 }

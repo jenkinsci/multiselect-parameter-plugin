@@ -1,12 +1,14 @@
 package de.westemeyer.plugins.multiselect;
 
 import de.westemeyer.plugins.multiselect.parser.ConfigSerialization;
+import de.westemeyer.plugins.multiselect.parser.CsvWriter;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
@@ -95,5 +97,48 @@ class MultiselectDecisionTreeTest {
         };
 
         Assertions.assertEquals(0, decisionTree.getInitialValuesForColumn(0).size());
+    }
+
+    @Test
+    void serializationRoundTripTest() throws Exception {
+        MultiselectDecisionTree decisionTree = new MultiselectDecisionTree();
+        decisionTree.setVariableDescriptions(Arrays.asList(createDescriptor("Sport", "SELECTED_SPORT"), createDescriptor("Team", "SELECTED_TEAM")));
+        decisionTree.setItemList(Arrays.asList(
+                createItem(null, "Tennis", createItem(null, "Tennisclub Rumeln-Kaldenhausen e.V."), createItem("Alternative label", "Oppumer TC")),
+                createItem(null, "Football", createItem(null, "Rumelner TV"), createItem(null, "FC Rumeln")),
+                createItem("Very popular sport", "Wakeboard", createItem(null, "WSC Duisburg Rheinhausen"))));
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            decisionTree.serialize(new CsvWriter(), outputStream);
+            Assertions.assertEquals("H,Sport,Team\n" +
+                    "V,SELECTED_SPORT,SELECTED_TEAM\n" +
+                    "C,Tennis,Tennisclub Rumeln-Kaldenhausen e.V.\n" +
+                    "T,,Alternative label\n" +
+                    "C,Tennis,Oppumer TC\n" +
+                    "C,Football,Rumelner TV\n" +
+                    "C,Football,FC Rumeln\n" +
+                    "T,Very popular sport,\n" +
+                    "C,Wakeboard,WSC Duisburg Rheinhausen\n", outputStream.toString());
+        }
+    }
+
+    private MultiselectDecisionItem createItem(String label, String value, MultiselectDecisionItem... children) {
+        MultiselectDecisionItem item = new MultiselectDecisionItem(null, null, null);
+        if (label != null) {
+            item.setLabel(label);
+        }
+        if (value != null) {
+            item.setValue(value);
+        }
+        if (children != null) {
+            item.setChildren(Arrays.asList(children));
+        }
+        return item;
+    }
+
+    private MultiselectVariableDescriptor createDescriptor(String label, String variable) {
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(null, null, 0);
+        descriptor.setLabel(label);
+        descriptor.setVariableName(variable);
+        return descriptor;
     }
 }

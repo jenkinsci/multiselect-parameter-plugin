@@ -1,12 +1,17 @@
 package de.westemeyer.plugins.multiselect.parser;
 
+import com.opencsv.CSVReader;
 import de.westemeyer.plugins.multiselect.MultiselectDecisionTree;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 class CsvParserTest {
     /** First input csv for tests. */
@@ -17,10 +22,10 @@ class CsvParserTest {
 
     /** Input from issue JENKINS-66486. */
     private static final String INPUT_QUOTED = "H,Component,Container,Machine\n"
-                                               + "V,SELECTED_COMPONENT,SELECTED_CONTAINER,MACHINES\n"
-                                               + "C,component1,container1,\"machine1,machine2\"\n"
-                                               + "C,component2,container1,\"machine3,machine4\"\n"
-                                               + "C,component3,container2,\"machine1,machine2\"\n";
+            + "V,SELECTED_COMPONENT,SELECTED_CONTAINER,MACHINES\n"
+            + "C,component1,container1,\"machine1,machine2\"\n"
+            + "C,component2,container1,\"machine3,machine4\"\n"
+            + "C,component3,container2,\"machine1,machine2\"\n";
 
     @ParameterizedTest
     @ValueSource(strings = {INPUT_CSV, INPUT_NO_TITLES, "", "V,A,B\n", "H,Hello,World\n", "C,a,b\n", INPUT_QUOTED})
@@ -44,6 +49,24 @@ class CsvParserTest {
     void invalidColumnCount() throws Exception {
         MultiselectDecisionTree decisionTree = getDecisionTree("H\nT\n", false);
         Assertions.assertTrue(decisionTree.getVariableLabels().isEmpty());
+    }
+
+    @Test
+    void testException() throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream("".getBytes())) {
+            CsvParser csvParser = new CsvParser() {
+                @Override
+                protected CSVReader createCsvReader(InputStreamReader reader) {
+                    return new CSVReader(new BufferedReader(new InputStreamReader(inputStream))) {
+                        @Override
+                        public void close() throws IOException {
+                            throw new IOException("Ooops, I might get caught!");
+                        }
+                    };
+                }
+            };
+            Assertions.assertDoesNotThrow(() -> csvParser.analyzeConfiguration(inputStream));
+        }
     }
 
     private MultiselectDecisionTree getDecisionTree(String input, boolean assertEquality) throws Exception {
