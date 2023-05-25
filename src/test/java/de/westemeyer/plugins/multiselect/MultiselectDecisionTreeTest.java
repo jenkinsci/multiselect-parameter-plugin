@@ -3,7 +3,6 @@ package de.westemeyer.plugins.multiselect;
 import de.westemeyer.plugins.multiselect.parser.ConfigSerialization;
 import de.westemeyer.plugins.multiselect.parser.CsvWriter;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -16,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MultiselectDecisionTreeTest {
     /** Csv input content for tests. */
@@ -39,27 +41,27 @@ class MultiselectDecisionTreeTest {
         Map<String, Integer> selection = new HashMap<>();
 
         Map<String, String> properties = tree.resolveValues(selection);
-        Assertions.assertEquals(0, properties.size());
+        assertEquals(0, properties.size());
 
         selection.put("SELECTED_REPOSITORY", 0);
         properties = tree.resolveValues(selection);
-        Assertions.assertEquals(0, properties.size());
+        assertEquals(0, properties.size());
 
         selection.put(SELECTED_TYPE, 0);
         selection.put(SELECTED_SPORT, 0);
         selection.put(SELECTED_COUNTRY, 1);
         selection.put(SELECTED_TEAM, 1);
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> tree.resolveValues(selection));
+        assertThrows(IndexOutOfBoundsException.class, () -> tree.resolveValues(selection));
 
         selection.put(SELECTED_TEAM, 0);
         properties = tree.resolveValues(selection);
-        Assertions.assertEquals(4, properties.size());
-        Assertions.assertEquals("Water", properties.get(SELECTED_TYPE));
-        Assertions.assertEquals("Wakeboarding", properties.get(SELECTED_SPORT));
-        Assertions.assertEquals("Austria", properties.get(SELECTED_COUNTRY));
-        Assertions.assertEquals("WSC Wien", properties.get(SELECTED_TEAM));
+        assertEquals(4, properties.size());
+        assertEquals("Water", properties.get(SELECTED_TYPE));
+        assertEquals("Wakeboarding", properties.get(SELECTED_SPORT));
+        assertEquals("Austria", properties.get(SELECTED_COUNTRY));
+        assertEquals("WSC Wien", properties.get(SELECTED_TEAM));
 
-        Assertions.assertEquals(4, tree.getVariableDescriptions().size());
+        assertEquals(4, tree.getVariableDescriptions().size());
     }
 
     @Test
@@ -73,7 +75,7 @@ class MultiselectDecisionTreeTest {
             }
         };
 
-        Assertions.assertEquals("", decisionTree.toString());
+        assertEquals("", decisionTree.toString());
     }
 
     @ParameterizedTest
@@ -81,7 +83,14 @@ class MultiselectDecisionTreeTest {
     void initialValuesForColumn(int column, String values) {
         MultiselectDecisionTree tree = MultiselectDecisionTree.parse(INPUT_CSV);
         List<String> initialValuesForColumn = tree.getInitialValuesForColumn(column).stream().map(MultiselectDecisionItem::getValue).collect(Collectors.toList());
-        Assertions.assertEquals(Arrays.asList(values.split(";")), initialValuesForColumn);
+        assertEquals(Arrays.asList(values.split(";")), initialValuesForColumn);
+    }
+
+    @Test
+    void getInitialValuesForColumn() {
+        MultiselectDecisionTree tree = MultiselectDecisionTree.parse("");
+        List<MultiselectDecisionItem> initialValuesForColumn = tree.getInitialValuesForColumn(1);
+        assertEquals(0, initialValuesForColumn.size());
     }
 
     @Test
@@ -96,7 +105,7 @@ class MultiselectDecisionTreeTest {
             }
         };
 
-        Assertions.assertEquals(0, decisionTree.getInitialValuesForColumn(0).size());
+        assertEquals(0, decisionTree.getInitialValuesForColumn(0).size());
     }
 
     @Test
@@ -109,7 +118,7 @@ class MultiselectDecisionTreeTest {
                 createItem("Very popular sport", "Wakeboard", createItem(null, "WSC Duisburg Rheinhausen"))));
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             decisionTree.serialize(new CsvWriter(), outputStream);
-            Assertions.assertEquals("H,Sport,Team\n" +
+            assertEquals("H,Sport,Team\n" +
                     "V,SELECTED_SPORT,SELECTED_TEAM\n" +
                     "C,Tennis,Tennisclub Rumeln-Kaldenhausen e.V.\n" +
                     "T,,Alternative label\n" +

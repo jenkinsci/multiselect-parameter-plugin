@@ -2,7 +2,6 @@ package de.westemeyer.plugins.multiselect.parser;
 
 import com.opencsv.CSVReader;
 import de.westemeyer.plugins.multiselect.MultiselectDecisionTree;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -12,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class CsvParserTest {
     /** First input csv for tests. */
@@ -32,7 +33,7 @@ class CsvParserTest {
     void testParser(String input) throws Exception {
         MultiselectDecisionTree decisionTree = getDecisionTree(input, true);
 
-        Assertions.assertEquals(input, decisionTree.toString());
+        assertEquals(input, decisionTree.toString());
     }
 
     @Test
@@ -48,7 +49,7 @@ class CsvParserTest {
     @Test
     void invalidColumnCount() throws Exception {
         MultiselectDecisionTree decisionTree = getDecisionTree("H\nT\n", false);
-        Assertions.assertTrue(decisionTree.getVariableLabels().isEmpty());
+        assertTrue(decisionTree.getVariableLabels().isEmpty());
     }
 
     @Test
@@ -65,7 +66,15 @@ class CsvParserTest {
                     };
                 }
             };
-            Assertions.assertDoesNotThrow(() -> csvParser.analyzeConfiguration(inputStream));
+            assertDoesNotThrow(() -> csvParser.analyzeConfiguration(inputStream));
+        }
+    }
+
+    @Test
+    void analyzeConfiguration() throws IOException {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream("H,One\nV,VAR1,VAR2\n".getBytes())) {
+            MultiselectDecisionTree tree = new CsvParser().analyzeConfiguration(inputStream);
+            assertNull(tree.getVariableDescriptions().get(1).getLabel());
         }
     }
 
@@ -84,9 +93,9 @@ class CsvParserTest {
             // assert symmetrical parsing/serialising
             String csvOutput = byteArrayOutputStream.toString();
             if (assertEquality) {
-                Assertions.assertEquals(input, csvOutput);
+                assertEquals(input, csvOutput);
             } else {
-                Assertions.assertNotEquals(input, csvOutput);
+                assertNotEquals(input, csvOutput);
             }
         }
         return decisionTree;
