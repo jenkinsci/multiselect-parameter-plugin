@@ -72,7 +72,7 @@ class CsvParserTest {
 
     @Test
     void analyzeConfiguration() throws IOException {
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream("H,One\nV,VAR1,VAR2\n".getBytes())) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream("H,One\nV,VAR1,VAR2\nT,a\nC,val1,val2".getBytes())) {
             MultiselectDecisionTree tree = new CsvParser().analyzeConfiguration(inputStream);
             assertNull(tree.getVariableDescriptions().get(1).getLabel());
         }
