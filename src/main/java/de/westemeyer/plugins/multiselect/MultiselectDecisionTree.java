@@ -1,6 +1,9 @@
 package de.westemeyer.plugins.multiselect;
 
 import de.westemeyer.plugins.multiselect.parser.ConfigSerialization;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,10 +36,18 @@ public class MultiselectDecisionTree implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(MultiselectDecisionTree.class.getName());
 
     /** List of items in first selection list. */
+    @NonNull
     private List<MultiselectDecisionItem> itemList = new ArrayList<>();
 
     /** Meta information about build variables/columns. */
+    @NonNull
     private List<MultiselectVariableDescriptor> variableDescriptions = new ArrayList<>();
+
+    @DataBoundConstructor
+    public MultiselectDecisionTree() {
+        // empty constructor is necessary, otherwise pipelines can not create
+        // structured configuration (using setter methods)
+    }
 
     /**
      * Get initial values for column when first displaying list of select boxes in "build with parameters" view.
@@ -64,7 +75,7 @@ public class MultiselectDecisionTree implements Serializable {
      * @param coordinates list of indices
      * @return item from tree
      */
-    public MultiselectDecisionItem getItemByCoordinates(Integer... coordinates) throws Exception {
+    public MultiselectDecisionItem getItemByCoordinates(Integer... coordinates) {
         // convert list of integers into queue
         Queue<Integer> itemPath = MultiselectParameterDefinition.createCoordinates(coordinates);
 
@@ -89,7 +100,7 @@ public class MultiselectDecisionTree implements Serializable {
     /**
      * Serialize the tree using a given serialization method.
      * @param serialization serialization method to use
-     * @param outputStream output stream to write to
+     * @param outputStream  output stream to write to
      * @throws Exception in case an error occurs writing to output stream
      */
     public void serialize(ConfigSerialization serialization, OutputStream outputStream) throws Exception {
@@ -108,10 +119,9 @@ public class MultiselectDecisionTree implements Serializable {
     /**
      * Use a visitor object/lambda to perform an action on one item per column.
      * @param itemPath the item indices to select from each column
-     * @param visitor lambda to execute for select items in tree
-     * @throws Exception in case an error occurs in lambda
+     * @param visitor  lambda to execute for select items in tree
      */
-    public void visitSelectedItems(Queue<Integer> itemPath, MultiselectDecisionItemVisitor visitor) throws Exception {
+    public void visitSelectedItems(Queue<Integer> itemPath, MultiselectDecisionItemVisitor visitor) {
         MultiselectDecisionItem.visitSelectedItems(visitor, itemList, new ArrayDeque<>(variableDescriptions), itemPath);
     }
 
@@ -133,9 +143,8 @@ public class MultiselectDecisionTree implements Serializable {
      * For example: COLUMN1=3 resolves to COLUMN1=ValueInRow3.
      * @param selectedValues map of variable names and column indices (row numbers)
      * @return property list of table cell values with variable name as key
-     * @throws Exception in case an error occurs while
      */
-    public Map<String, String> resolveValues(Map<String, Integer> selectedValues) throws Exception {
+    public Map<String, String> resolveValues(Map<String, Integer> selectedValues) {
         // mapping of variable names to row item indices in correct order of columns (which has first to be determined by variable names)
         Queue<Integer> indexOrder = variableDescriptions.stream().map(MultiselectVariableDescriptor::getVariableName).map(selectedValues::get).filter(
                 Objects::nonNull).collect(Collectors.toCollection(ArrayDeque::new));
@@ -158,6 +167,7 @@ public class MultiselectDecisionTree implements Serializable {
      * Get item list of first column.
      * @return item list of first column
      */
+    @NonNull
     public List<MultiselectDecisionItem> getItemList() {
         return itemList;
     }
@@ -166,14 +176,17 @@ public class MultiselectDecisionTree implements Serializable {
      * Set item list of first column.
      * @param itemList item list of first column
      */
-    public void setItemList(List<MultiselectDecisionItem> itemList) {
+    @DataBoundSetter
+    public void setItemList(@NonNull List<MultiselectDecisionItem> itemList) {
         this.itemList = itemList;
+        updateInitialValues();
     }
 
     /**
      * Get meta information about build variables/columns.
      * @return meta information about build variables/columns.
      */
+    @NonNull
     public List<MultiselectVariableDescriptor> getVariableDescriptions() {
         return variableDescriptions;
     }
@@ -208,8 +221,32 @@ public class MultiselectDecisionTree implements Serializable {
      * Set meta information about build variables/columns.
      * @param variableDescriptions meta information about build variables/columns
      */
-    public void setVariableDescriptions(List<MultiselectVariableDescriptor> variableDescriptions) {
+    @DataBoundSetter
+    public void setVariableDescriptions(@NonNull List<MultiselectVariableDescriptor> variableDescriptions) {
         this.variableDescriptions = variableDescriptions;
+        int i = 0;
+        for (MultiselectVariableDescriptor variableDescription : this.variableDescriptions) {
+            variableDescription.setColumnIndex(i++);
+        }
+        updateInitialValues();
+    }
+
+    /**
+     * Set up initial values for display in drop down boxes on web page.
+     */
+    public void updateInitialValues() {
+        if (!(variableDescriptions.isEmpty() || itemList.isEmpty())) {
+            // iterate all columns
+            for (int i = 0; i < variableDescriptions.size(); ++i) {
+                // get column descriptor for column index
+                MultiselectVariableDescriptor columnDescriptor = variableDescriptions.get(i);
+
+                // find initial values per column and keep them in variable descriptor
+                columnDescriptor.setInitialValues(getInitialValuesForColumn(i));
+            }
+
+            variableDescriptions.get(0).setInitialValues(itemList);
+        }
     }
 
     @Override
@@ -223,7 +260,7 @@ public class MultiselectDecisionTree implements Serializable {
             serialize(writer, byteArrayOutputStream);
 
             // assert symmetrical parsing/serialising
-            return byteArrayOutputStream.toString(StandardCharsets.UTF_8.toString());
+            return byteArrayOutputStream.toString(StandardCharsets.UTF_8);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error serializing configuration", e);
             return "";
