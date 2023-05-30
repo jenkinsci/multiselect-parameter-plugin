@@ -9,11 +9,13 @@ import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,24 +45,36 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     private static final String PARAMETER_NAME = "name";
 
     /** Job CSV configuration content. */
+    @CheckForNull
     private MultiselectDecisionTree decisionTree;
 
     /** Configuration format for a parameter definition. */
+    @CheckForNull
     private MultiselectConfigurationFormat format;
 
     /** UUID to be used to distinguish JavaScript values for multiple parameters from each other. */
-    private final String uuid = UUIDGenerator.generateUUID(15);
+    private String uuid = UUIDGenerator.generateUUID(15);
 
     /**
      * Create new parameter definition object.
-     * @param name parameter name
+     * @param name        parameter name
      * @param description parameter description
-     * @param decisionTree parsed parameter definition
-     * @param format format, currently only CSV
      */
     @DataBoundConstructor
-    public MultiselectParameterDefinition(String name, String description, MultiselectDecisionTree decisionTree, MultiselectConfigurationFormat format) {
-        super(name, description);
+    public MultiselectParameterDefinition(String name, String description) {
+        super(name);
+        setDescription(description);
+    }
+
+    /**
+     * Create new parameter definition object.
+     * @param name         parameter name
+     * @param description  parameter description
+     * @param decisionTree parsed parameter definition
+     * @param format       format, currently only CSV
+     */
+    public MultiselectParameterDefinition(String name, String description, @CheckForNull MultiselectDecisionTree decisionTree, @CheckForNull MultiselectConfigurationFormat format) {
+        this(name, description);
         this.decisionTree = decisionTree;
         this.format = format;
     }
@@ -67,14 +82,13 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     /**
      * Get item list for AJAX call from config.jelly.
      * @param coordinates coordinates in tree, i.e. item indices from columns
-     * @return list of parameter values for given coordinates
+     * @return array of parameter values for given coordinates
      */
     @JavaScriptMethod
     public String[] getItemList(Integer[] coordinates) {
-
         Queue<Integer> itemPath = createCoordinates(coordinates);
         List<String> returnList = new ArrayList<>();
-        try {
+        if (decisionTree != null) {
             decisionTree.visitSelectedItems(itemPath, (item, column) -> {
                 // return values from last coordinate
                 if (itemPath.isEmpty()) {
@@ -82,8 +96,6 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
                 }
                 return true;
             });
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, e.getLocalizedMessage(), e);
         }
         return returnList.toArray(new String[0]);
     }
@@ -107,7 +119,9 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     @Override
     @Nullable
     public ParameterValue getDefaultParameterValue() {
-        return new MultiselectParameterValue(getName(), new HashMap<>());
+        MultiselectParameterValue multiselectParameterValue = new MultiselectParameterValue(getName());
+        multiselectParameterValue.setSelectedValues(new HashMap<>());
+        return multiselectParameterValue;
     }
 
     @Override
@@ -137,12 +151,15 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
             }
         });
 
-        // create new parameter value
-        try {
-            return new MultiselectParameterValue(getName(), decisionTree.resolveValues(selectedValues));
-        } catch (Exception e) {
-            return new MultiselectParameterValue(getName(), new HashMap<>());
+        MultiselectParameterValue multiselectParameterValue = new MultiselectParameterValue(getName());
+        multiselectParameterValue.setSelectedValues(new HashMap<>());
+
+        if (decisionTree != null) {
+            // create new parameter value
+            multiselectParameterValue.setSelectedValues(decisionTree.resolveValues(selectedValues));
         }
+
+        return multiselectParameterValue;
     }
 
     @Override
@@ -154,6 +171,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
      * Get decision tree object containing all possible variable combinations.
      * @return decision tree object containing all possible variable combinations
      */
+    @CheckForNull
     public MultiselectDecisionTree getDecisionTree() {
         return decisionTree;
     }
@@ -162,7 +180,8 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
      * Set decision tree object containing all possible variable combinations.
      * @param decisionTree decision tree object containing all possible variable combinations
      */
-    public void setDecisionTree(MultiselectDecisionTree decisionTree) {
+    @DataBoundSetter
+    public void setDecisionTree(@CheckForNull MultiselectDecisionTree decisionTree) {
         this.decisionTree = decisionTree;
     }
 
@@ -170,6 +189,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
      * Get content/parser format.
      * @return content/parser format
      */
+    @CheckForNull
     public MultiselectConfigurationFormat getFormat() {
         return format;
     }
@@ -178,7 +198,8 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
      * Set content/parser format.
      * @param format content/parser format
      */
-    public void setFormat(MultiselectConfigurationFormat format) {
+    @DataBoundSetter
+    public void setFormat(@CheckForNull MultiselectConfigurationFormat format) {
         this.format = format;
     }
 
@@ -191,7 +212,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     }
 
     @Extension
-    @Symbol ({ "multiselect" })
+    @Symbol({"multiselect"})
     public static class DescriptorImpl extends ParameterDescriptor {
         /**
          * Validate configuration data entered in job configuration form when "configuration" text field loses focus.
@@ -233,32 +254,58 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
 
         @Override
         public ParameterDefinition newInstance(@Nullable StaplerRequest req, @Nonnull JSONObject formData) {
-            return newInstance(formData.getString("configuration"), formData.getString(PARAMETER_NAME), formData.getString("description"));
+            // currently only CSV configuration format is implemented
+            MultiselectConfigurationFormat format = MultiselectConfigurationFormat.CSV;
+
+            return newInstance(formData.getString("configuration"), formData.getString(PARAMETER_NAME), formData.getString("description"), new MultiselectParameterParser(format));
         }
 
         /**
          * Create new parameter definition object from configuration form.
-         * @param configuration configuration data from job configuration page as string
-         * @param name name of configuration parameter
-         * @param description description of configuration parameter
+         * @param configuration              configuration data from job configuration page as string
+         * @param name                       name of configuration parameter
+         * @param description                description of configuration parameter
+         * @param multiselectParameterParser parser used to create new configuration
          * @return new parameter definition
          */
-        public MultiselectParameterDefinition newInstance(String configuration, String name, String description) {
-            // currently only CSV configuration format is implemented
-            MultiselectConfigurationFormat format = MultiselectConfigurationFormat.CSV;
-
+        public static MultiselectParameterDefinition newInstance(String configuration, String name, String description, MultiselectParameterParser multiselectParameterParser) {
             MultiselectDecisionTree multiselectDecisionTree;
 
             try {
                 // parse configuration as object tree
-                multiselectDecisionTree = new MultiselectParameterParser(format).parseConfiguration(configuration);
+                multiselectDecisionTree = multiselectParameterParser.parseConfiguration(configuration);
             } catch (IOException exception) {
                 LOGGER.log(Level.WARNING, "Error trying to parse configuration format.");
                 multiselectDecisionTree = new MultiselectDecisionTree();
             }
 
             // create parameter definition
-            return new MultiselectParameterDefinition(name, description, multiselectDecisionTree, format);
+            MultiselectParameterDefinition multiselectParameterDefinition = new MultiselectParameterDefinition(name, description);
+            multiselectParameterDefinition.setDecisionTree(multiselectDecisionTree);
+            multiselectParameterDefinition.setFormat(multiselectParameterParser.getFormat());
+            return multiselectParameterDefinition;
         }
+    }
+
+    /**
+     * Set unique ID value.
+     * @param uuid the new UUID to use for this object
+     */
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MultiselectParameterDefinition)) return false;
+        if (!super.equals(o)) return false;
+        MultiselectParameterDefinition that = (MultiselectParameterDefinition) o;
+        return Objects.equals(decisionTree, that.decisionTree) && format == that.format && Objects.equals(uuid, that.uuid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), decisionTree, format, uuid);
     }
 }

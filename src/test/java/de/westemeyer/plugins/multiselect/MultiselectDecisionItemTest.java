@@ -1,7 +1,14 @@
 package de.westemeyer.plugins.multiselect;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Queue;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class MultiselectDecisionItemTest {
     /** Input to be used in tests. */
@@ -17,63 +24,90 @@ class MultiselectDecisionItemTest {
     private static final String NEW_VALUE = "New value";
 
     @Test
-    void getDisplayLabel() throws Exception {
+    void getDisplayLabel() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 1, 0, 0);
-        Assertions.assertEquals(ALTERNATIVE_TEAM_NAME, item.getDisplayLabel());
+        assertEquals(ALTERNATIVE_TEAM_NAME, item.getDisplayLabel());
         item = INPUT.getItemByCoordinates(0, 0, 0, 0);
-        Assertions.assertEquals(WSC_DUISBURG_RHEINHAUSEN, item.getDisplayLabel());
+        assertEquals(WSC_DUISBURG_RHEINHAUSEN, item.getDisplayLabel());
+        item = new MultiselectDecisionItem(null, null, null);
+        assertNull(item.getDisplayLabel());
     }
 
     @Test
-    void getParent() throws Exception {
+    void getParent() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0);
         item = item.getParent();
-        Assertions.assertNotNull(item);
-        Assertions.assertNull(item.getParent());
+        assertNotNull(item);
+        assertNull(item.getParent());
     }
 
     @Test
-    void isRoot() throws Exception {
+    void nvl() {
+        assertEquals("MultiselectDecisionItem{label='', value='null', children=[]}", new MultiselectDecisionItem(null, null, null).toString());
+        assertEquals("MultiselectDecisionItem{label='label', value='null', children=[]}", new MultiselectDecisionItem(null, "label", null).toString());
+    }
+
+    @Test
+    void isRoot() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0);
-        Assertions.assertFalse(item.isRoot());
+        assertFalse(item.isRoot());
         item = item.getParent();
-        Assertions.assertTrue(item.isRoot());
+        assertTrue(item.isRoot());
     }
 
     @Test
-    void getChildren() throws Exception {
+    void getChildren() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0, 0);
         item = item.getChildren().get(0);
-        Assertions.assertEquals(0, item.getChildren().size());
+        assertEquals(0, item.getChildren().size());
     }
 
     @Test
-    void isLeaf() throws Exception {
+    void isLeaf() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0, 0);
-        Assertions.assertFalse(item.isLeaf());
+        assertFalse(item.isLeaf());
         item = item.getChildren().get(0);
-        Assertions.assertTrue(item.isLeaf());
+        assertTrue(item.isLeaf());
     }
 
     @Test
-    void getLabel() throws Exception {
+    void getLabel() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0, 0, 0);
-        Assertions.assertEquals("", item.getLabel());
+        assertEquals("", item.getLabel());
         item = INPUT.getItemByCoordinates(0, 1, 0, 0);
-        Assertions.assertEquals(ALTERNATIVE_TEAM_NAME, item.getLabel());
+        assertEquals(ALTERNATIVE_TEAM_NAME, item.getLabel());
     }
 
     @Test
-    void value() throws Exception {
+    void value() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0, 0, 0);
-        Assertions.assertEquals(WSC_DUISBURG_RHEINHAUSEN, item.getValue());
+        assertEquals(WSC_DUISBURG_RHEINHAUSEN, item.getValue());
         item.setValue(NEW_VALUE);
-        Assertions.assertEquals(NEW_VALUE, item.getValue());
+        assertEquals(NEW_VALUE, item.getValue());
     }
 
     @Test
-    void testToString() throws Exception {
+    void testToString() {
         MultiselectDecisionItem item = INPUT.getItemByCoordinates(0, 0, 0, 0);
-        Assertions.assertEquals("MultiselectDecisionItem{label='', value='WSC Duisburg Rheinhausen', children=[]}", item.toString());
+        assertEquals("MultiselectDecisionItem{label='', value='WSC Duisburg Rheinhausen', children=[]}", item.toString());
+    }
+
+    @Test
+    void testSetter() {
+        MultiselectDecisionItem item = new MultiselectDecisionItem(null, "Hello", "Value");
+        assertEquals("Hello", item.getLabel());
+        item.setLabel("Hullo");
+        assertEquals("Hullo", item.getLabel());
+    }
+
+    @Test
+    void visitSubTree() throws Exception {
+        MultiselectDecisionItemVisitor visitor = (item, column) -> false;
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor("", "", 0);
+        Queue<MultiselectVariableDescriptor> descriptors = new ArrayDeque<>();
+        descriptors.add(descriptor);
+        MultiselectDecisionItem item = mock(MultiselectDecisionItem.class);
+        MultiselectDecisionItem.visitSubTree(visitor, Collections.singletonList(item), descriptors);
+        verify(item, times(0)).visitSubTree(any(), any());
     }
 }

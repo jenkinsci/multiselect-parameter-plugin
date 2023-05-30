@@ -24,4 +24,20 @@ class MultiselectVariableDescriptorTest {
         descriptor.setInitialValues(value);
         Assertions.assertEquals(value, descriptor.getInitialValues());
     }
+
+    @Test
+    void setLabel() {
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME, 0);
+        Assertions.assertEquals(LABEL, descriptor.getLabel());
+        descriptor.setLabel("different label");
+        Assertions.assertEquals("different label", descriptor.getLabel());
+    }
+
+    @Test
+    void setVariableName() {
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME, 0);
+        Assertions.assertEquals(NAME, descriptor.getVariableName());
+        descriptor.setVariableName("different name");
+        Assertions.assertEquals("different name", descriptor.getVariableName());
+    }
 }

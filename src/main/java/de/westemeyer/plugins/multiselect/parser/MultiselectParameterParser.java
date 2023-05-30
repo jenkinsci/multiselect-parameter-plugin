@@ -2,11 +2,9 @@ package de.westemeyer.plugins.multiselect.parser;
 
 import de.westemeyer.plugins.multiselect.MultiselectConfigurationFormat;
 import de.westemeyer.plugins.multiselect.MultiselectDecisionTree;
-import de.westemeyer.plugins.multiselect.MultiselectVariableDescriptor;
 import org.apache.tools.ant.filters.StringInputStream;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Parameter parser object, delegating to a specific format parser, e.g. CSV.
@@ -63,19 +61,17 @@ public class MultiselectParameterParser {
         // keep validation result
         validationResult = parser.getValidationResult();
 
-        // get list of variable descriptors
-        List<MultiselectVariableDescriptor> variableDescriptions = multiselectDecisionTree.getVariableDescriptions();
-
-        // iterate all columns
-        for (int i = 0; i < variableDescriptions.size(); ++i) {
-            // get column descriptor for column index
-            MultiselectVariableDescriptor columnDescriptor = variableDescriptions.get(i);
-
-            // find initial values per column and keep them in variable descriptor
-            columnDescriptor.setInitialValues(multiselectDecisionTree.getInitialValuesForColumn(i));
-        }
+        multiselectDecisionTree.updateInitialValues();
 
         // return variable content tree
         return multiselectDecisionTree;
+    }
+
+    /**
+     * Get the format that is being used.
+     * @return the format that is being used
+     */
+    public MultiselectConfigurationFormat getFormat() {
+        return format;
     }
 }

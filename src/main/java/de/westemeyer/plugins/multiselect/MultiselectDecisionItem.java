@@ -1,5 +1,8 @@
 package de.westemeyer.plugins.multiselect;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
+
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -14,7 +17,7 @@ public class MultiselectDecisionItem implements Serializable {
     private static final long serialVersionUID = -7959174754803921973L;
 
     /** Label for display in selection list. */
-    private final String label;
+    private String label;
 
     /** Value for use in variable. */
     private String value;
@@ -23,7 +26,7 @@ public class MultiselectDecisionItem implements Serializable {
     private List<MultiselectDecisionItem> children = new ArrayList<>();
 
     /** Parent item. */
-    private final MultiselectDecisionItem parent;
+    private MultiselectDecisionItem parent;
 
     /**
      * Create a new decision item with label and value.
@@ -31,6 +34,7 @@ public class MultiselectDecisionItem implements Serializable {
      * @param label label for display in selection list
      * @param value value for use in variable
      */
+    @DataBoundConstructor
     public MultiselectDecisionItem(MultiselectDecisionItem parent, String label, String value) {
         this.parent = parent;
         this.label = label;
@@ -74,9 +78,8 @@ public class MultiselectDecisionItem implements Serializable {
      * @param visitor visitor object or lambda collecting information
      * @param columns column descriptions to go along with the items
      * @param itemPath indices of items in columns to select and walk through
-     * @throws Exception if an error occurs in visitor
      */
-    public void visitSelectedItems(MultiselectDecisionItemVisitor visitor, Queue<MultiselectVariableDescriptor> columns, Queue<Integer> itemPath) throws Exception {
+    public void visitSelectedItems(MultiselectDecisionItemVisitor visitor, Queue<MultiselectVariableDescriptor> columns, Queue<Integer> itemPath) {
         // walk through select items in list of children by their indices
         visitSelectedItems(visitor, children, columns, itemPath);
     }
@@ -88,9 +91,8 @@ public class MultiselectDecisionItem implements Serializable {
      * @param items item list (column entries) to iterate
      * @param columns column descriptions to go along with the items
      * @param itemPath indices of items in columns to select and walk through
-     * @throws Exception if an error occurs in visitor
      */
-    public static void visitSelectedItems(MultiselectDecisionItemVisitor visitor, List<MultiselectDecisionItem> items, Queue<MultiselectVariableDescriptor> columns, Queue<Integer> itemPath) throws Exception {
+    public static void visitSelectedItems(MultiselectDecisionItemVisitor visitor, List<MultiselectDecisionItem> items, Queue<MultiselectVariableDescriptor> columns, Queue<Integer> itemPath) {
         // pop first item index from queue
         Integer index = itemPath.poll();
 
@@ -115,6 +117,11 @@ public class MultiselectDecisionItem implements Serializable {
         return label;
     }
 
+    @DataBoundSetter
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
     /**
      * Get value for this item.
      * @return value for this item
@@ -127,6 +134,7 @@ public class MultiselectDecisionItem implements Serializable {
      * Set value for this item.
      * @param value value for this item
      */
+    @DataBoundSetter
     public void setValue(String value) {
         this.value = value;
     }
@@ -143,8 +151,12 @@ public class MultiselectDecisionItem implements Serializable {
      * Set children for this item.
      * @param children children for this item
      */
+    @DataBoundSetter
     public void setChildren(List<MultiselectDecisionItem> children) {
         this.children = children;
+        for (MultiselectDecisionItem child : children) {
+            child.setParent(this);
+        }
     }
 
     /**
@@ -160,7 +172,7 @@ public class MultiselectDecisionItem implements Serializable {
      * @return whether the item is a leaf item at the rightmost column
      */
     public boolean isLeaf() {
-        return children.size() == 0;
+        return children.isEmpty();
     }
 
     /**
@@ -169,6 +181,14 @@ public class MultiselectDecisionItem implements Serializable {
      */
     public MultiselectDecisionItem getParent() {
         return parent;
+    }
+
+    /**
+     * Set parent for this item.
+     * @param parent the new parent object
+     */
+    public void setParent(MultiselectDecisionItem parent) {
+        this.parent = parent;
     }
 
     /**
