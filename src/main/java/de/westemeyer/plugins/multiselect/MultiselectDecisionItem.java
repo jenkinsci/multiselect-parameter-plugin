@@ -117,6 +117,10 @@ public class MultiselectDecisionItem implements Serializable {
         return label;
     }
 
+    /**
+     * Set label for this item.
+     * @param label the new label
+     */
     @DataBoundSetter
     public void setLabel(String label) {
         this.label = label;

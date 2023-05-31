@@ -297,9 +297,15 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MultiselectParameterDefinition)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MultiselectParameterDefinition)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
         MultiselectParameterDefinition that = (MultiselectParameterDefinition) o;
         return Objects.equals(decisionTree, that.decisionTree) && format == that.format && Objects.equals(uuid, that.uuid);
     }

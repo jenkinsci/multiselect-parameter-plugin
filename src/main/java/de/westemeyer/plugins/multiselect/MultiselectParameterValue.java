@@ -46,6 +46,10 @@ public class MultiselectParameterValue extends ParameterValue {
         env.putAll(getSelectedValues());
     }
 
+    /**
+     * Set the selectedValues map.
+     * @param selectedValues the new map of selected values
+     */
     @DataBoundSetter
     public void setSelectedValues(Map<String, String> selectedValues) {
         this.selectedValues = selectedValues;
