@@ -30,13 +30,11 @@ public class MultiselectDecisionItem implements Serializable {
 
     /**
      * Create a new decision item with label and value.
-     * @param parent parent item to traverse tree backwards
      * @param label label for display in selection list
      * @param value value for use in variable
      */
     @DataBoundConstructor
-    public MultiselectDecisionItem(MultiselectDecisionItem parent, String label, String value) {
-        this.parent = parent;
+    public MultiselectDecisionItem(String label, String value) {
         this.label = label;
         this.value = value;
     }
@@ -55,7 +53,7 @@ public class MultiselectDecisionItem implements Serializable {
     /**
      * Static visitor pattern implementation to walk through the tree collecting information.
      * @param visitor visitor object or lambda collecting information
-     * @param items item list (column entries) to iterate
+     * @param items   item list (column entries) to iterate
      * @param columns column descriptions to go along with the items
      * @throws Exception if an error occurs in visitor
      */
@@ -75,8 +73,8 @@ public class MultiselectDecisionItem implements Serializable {
     /**
      * Visitor pattern implementation to walk through the tree collecting information. Select the column items
      * by their column index (no iteration involved).
-     * @param visitor visitor object or lambda collecting information
-     * @param columns column descriptions to go along with the items
+     * @param visitor  visitor object or lambda collecting information
+     * @param columns  column descriptions to go along with the items
      * @param itemPath indices of items in columns to select and walk through
      */
     public void visitSelectedItems(MultiselectDecisionItemVisitor visitor, Queue<MultiselectVariableDescriptor> columns, Queue<Integer> itemPath) {
@@ -87,9 +85,9 @@ public class MultiselectDecisionItem implements Serializable {
     /**
      * Static visitor pattern implementation to walk through the tree collecting information. Select the column items
      * by their column index (no iteration involved).
-     * @param visitor visitor object or lambda collecting information
-     * @param items item list (column entries) to iterate
-     * @param columns column descriptions to go along with the items
+     * @param visitor  visitor object or lambda collecting information
+     * @param items    item list (column entries) to iterate
+     * @param columns  column descriptions to go along with the items
      * @param itemPath indices of items in columns to select and walk through
      */
     public static void visitSelectedItems(MultiselectDecisionItemVisitor visitor, List<MultiselectDecisionItem> items, Queue<MultiselectVariableDescriptor> columns, Queue<Integer> itemPath) {
@@ -102,7 +100,7 @@ public class MultiselectDecisionItem implements Serializable {
             MultiselectDecisionItem subItem = items.get(index);
 
             // apply visitor function/lambda, removing first item from queue at the same time
-            if(visitor.visit(subItem, columns.poll())) {
+            if (visitor.visit(subItem, columns.poll())) {
                 // recursion with copy of remaining items in queue
                 subItem.visitSelectedItems(visitor, new ArrayDeque<>(columns), itemPath);
             }

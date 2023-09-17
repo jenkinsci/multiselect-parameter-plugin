@@ -50,7 +50,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
 
     /** Configuration format for a parameter definition. */
     @CheckForNull
-    private MultiselectConfigurationFormat format;
+    private MultiselectConfigurationFormat format = MultiselectConfigurationFormat.CSV;
 
     /** UUID to be used to distinguish JavaScript values for multiple parameters from each other. */
     private String uuid = UUIDGenerator.generateUUID(15);
@@ -303,15 +303,11 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         if (!(o instanceof MultiselectParameterDefinition)) {
             return false;
         }
-        if (!super.equals(o)) {
-            return false;
-        }
-        MultiselectParameterDefinition that = (MultiselectParameterDefinition) o;
-        return Objects.equals(decisionTree, that.decisionTree) && format == that.format && Objects.equals(uuid, that.uuid);
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), decisionTree, format, uuid);
+        return Objects.hash(decisionTree, uuid);
     }
 }

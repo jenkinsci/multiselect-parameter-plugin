@@ -1,14 +1,21 @@
 package de.westemeyer.plugins.multiselect;
 
+import edu.umd.cs.findbugs.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Queue;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class MultiselectDecisionItemTest {
     /** Input to be used in tests. */
@@ -29,8 +36,13 @@ class MultiselectDecisionItemTest {
         assertEquals(ALTERNATIVE_TEAM_NAME, item.getDisplayLabel());
         item = INPUT.getItemByCoordinates(0, 0, 0, 0);
         assertEquals(WSC_DUISBURG_RHEINHAUSEN, item.getDisplayLabel());
-        item = new MultiselectDecisionItem(null, null, null);
+        item = createItem(null, null);
         assertNull(item.getDisplayLabel());
+    }
+
+    @NonNull
+    private static MultiselectDecisionItem createItem(String label, String value) {
+        return new MultiselectDecisionItem(label, value);
     }
 
     @Test
@@ -43,8 +55,8 @@ class MultiselectDecisionItemTest {
 
     @Test
     void nvl() {
-        assertEquals("MultiselectDecisionItem{label='', value='null', children=[]}", new MultiselectDecisionItem(null, null, null).toString());
-        assertEquals("MultiselectDecisionItem{label='label', value='null', children=[]}", new MultiselectDecisionItem(null, "label", null).toString());
+        assertEquals("MultiselectDecisionItem{label='', value='null', children=[]}", createItem(null, null).toString());
+        assertEquals("MultiselectDecisionItem{label='label', value='null', children=[]}", createItem("label", null).toString());
     }
 
     @Test
@@ -94,7 +106,7 @@ class MultiselectDecisionItemTest {
 
     @Test
     void testSetter() {
-        MultiselectDecisionItem item = new MultiselectDecisionItem(null, "Hello", "Value");
+        MultiselectDecisionItem item = createItem("Hello", "Value");
         assertEquals("Hello", item.getLabel());
         item.setLabel("Hullo");
         assertEquals("Hullo", item.getLabel());
@@ -103,7 +115,7 @@ class MultiselectDecisionItemTest {
     @Test
     void visitSubTree() throws Exception {
         MultiselectDecisionItemVisitor visitor = (item, column) -> false;
-        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor("", "", 0);
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor("", "");
         Queue<MultiselectVariableDescriptor> descriptors = new ArrayDeque<>();
         descriptors.add(descriptor);
         MultiselectDecisionItem item = mock(MultiselectDecisionItem.class);

@@ -131,7 +131,7 @@ class MultiselectDecisionTreeTest {
     }
 
     private MultiselectDecisionItem createItem(String label, String value, MultiselectDecisionItem... children) {
-        MultiselectDecisionItem item = new MultiselectDecisionItem(null, null, null);
+        MultiselectDecisionItem item = new MultiselectDecisionItem(null, null);
         if (label != null) {
             item.setLabel(label);
         }
@@ -145,7 +145,7 @@ class MultiselectDecisionTreeTest {
     }
 
     private MultiselectVariableDescriptor createDescriptor(String label, String variable) {
-        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(null, null, 0);
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(null, null);
         descriptor.setLabel(label);
         descriptor.setVariableName(variable);
         return descriptor;

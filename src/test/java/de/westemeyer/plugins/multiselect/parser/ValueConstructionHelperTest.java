@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class ValueConstructionHelperTest {
     @Test
     void toStringTest() {
-        MultiselectDecisionItem item = new MultiselectDecisionItem(null, "label", "value");
+        MultiselectDecisionItem item = new MultiselectDecisionItem("label", "value");
         ValueConstructionHelper helper = new ValueConstructionHelper(null);
         Assertions.assertEquals("", helper.toString());
         helper = new ValueConstructionHelper(item);

@@ -192,12 +192,14 @@ class MultiselectParameterDefinitionTest {
         MultiselectParameterDefinition actual = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
         actual.setUuid(value.getUuid());
         assertEquals(value, actual);
+        actual.setDecisionTree(new MultiselectDecisionTree());
+        assertNotEquals(value, actual);
     }
 
     @Test
     void testHashCode() {
         MultiselectParameterDefinition value = new MultiselectParameterDefinition(NAME, DESCRIPTION);
         value.setUuid("FDcYsiejIswOtJc");
-        assertEquals(-993358548, value.hashCode());
+        assertEquals(-234521635, value.hashCode());
     }
 }

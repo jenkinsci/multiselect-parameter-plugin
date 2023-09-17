@@ -5,6 +5,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.ParameterValue;
 import hudson.model.Run;
 import hudson.util.VariableResolver;
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import java.util.Map;
@@ -34,6 +35,7 @@ public class MultiselectParameterValue extends ParameterValue {
      * @param name           name of parameter
      * @param selectedValues selected values in select boxes
      */
+    @DataBoundConstructor
     public MultiselectParameterValue(String name, Map<String, String> selectedValues) {
         this(name);
         this.selectedValues = selectedValues;
