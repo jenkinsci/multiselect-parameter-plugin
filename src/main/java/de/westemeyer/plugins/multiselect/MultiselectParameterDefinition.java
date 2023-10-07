@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,7 +110,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         Queue<Integer> itemPath = new ArrayDeque<>();
 
         // add all items to queue
-        Collections.addAll(itemPath, coordinates);
+        Arrays.stream(coordinates).filter(Objects::nonNull).forEach(itemPath::add);
 
         // return queue object
         return itemPath;

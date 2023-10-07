@@ -57,7 +57,7 @@
         function ${variable.uuid}Changed(select)
         {
             <j:if test="${i ne (variableDescriptions.size() - 1)}">
-            var coordinatesBuffer = new Array(${variableDescriptions.size()});
+                var coordinatesBuffer = new Array();
             var e = null;
                 <j:forEach var="listItem" items="${variableDescriptions}" indexVar="j">
                     <j:if test="${j lt (i + 1)}">

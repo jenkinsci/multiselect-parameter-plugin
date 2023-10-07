@@ -10,6 +10,7 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Queue;
 
 import static de.westemeyer.plugins.multiselect.MultiselectConfigurationFormat.CSV;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -201,5 +202,12 @@ class MultiselectParameterDefinitionTest {
         MultiselectParameterDefinition value = new MultiselectParameterDefinition(NAME, DESCRIPTION);
         value.setUuid("FDcYsiejIswOtJc");
         assertEquals(-234521635, value.hashCode());
+    }
+
+    @Test
+    void createCoordinates() {
+        Queue<Integer> coordinates = MultiselectParameterDefinition.createCoordinates(null, 100, null);
+        assertEquals(1, coordinates.size());
+        assertEquals(100, coordinates.poll());
     }
 }
