@@ -6,11 +6,15 @@ import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 import static de.westemeyer.plugins.multiselect.MultiselectConfigurationFormat.CSV;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -78,6 +82,27 @@ class MultiselectParameterDefinitionTest {
         definition.setDecisionTree(null);
         itemList = definition.getItemList(coordinates);
         assertEquals(0, itemList.length);
+    }
+
+    @ParameterizedTest(name = "Depending IDs for {0}")
+    @CsvSource({"first item,0,3", "second item,1,2", "third item,2,1", "fourth item,3,0"})
+    void getDependingVariableIds(String name, int index, int resultLength) {
+        MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
+        MultiselectDecisionTree decisionTree = definition.getDecisionTree();
+        assertNotNull(decisionTree);
+        List<String> idList = decisionTree.getVariableDescriptions().stream().map(MultiselectVariableDescriptor::getUuid).collect(Collectors.toList());
+
+        String[] dependingVariableIds = definition.getDependingVariableIds(idList.get(index));
+        assertEquals(resultLength, dependingVariableIds.length);
+    }
+
+    @Test
+    void getDependingVariableIdsWithoutDecisionTree() {
+        MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION);
+        MultiselectDecisionTree decisionTree = definition.getDecisionTree();
+        assertNull(decisionTree);
+        String[] dependingVariableIds = definition.getDependingVariableIds("anyString");
+        assertEquals(0, dependingVariableIds.length);
     }
 
     @Test

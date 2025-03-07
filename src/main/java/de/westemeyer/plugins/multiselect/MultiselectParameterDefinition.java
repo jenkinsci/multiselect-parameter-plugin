@@ -84,7 +84,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
      * @param coordinates coordinates in tree, i.e. item indices from columns
      * @return array of parameter values for given coordinates
      */
-    @JavaScriptMethod
+    @JavaScriptMethod(name = "getItemList")
     public String[] getItemList(Integer[] coordinates) {
         Queue<Integer> itemPath = createCoordinates(coordinates);
         List<String> returnList = new ArrayList<>();
@@ -98,6 +98,30 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
             });
         }
         return returnList.toArray(new String[0]);
+    }
+
+    /**
+     * Method used by JavaScript code to get all combo box ids that depend on content of the given combo box ID.
+     * @param selectedId combo box ID
+     * @return all combo box ids that depend on content of the given combo box ID
+     */
+    @JavaScriptMethod(name = "getDependingVariableIds")
+    public String[] getDependingVariableIds(String selectedId) {
+        if (decisionTree == null) {
+            return new String[0];
+        }
+        boolean found = false;
+        List<String> result = new ArrayList<>();
+        for (MultiselectVariableDescriptor variableDescription : decisionTree.getVariableDescriptions()) {
+            if (found) {
+                result.add(variableDescription.getUuid());
+            }
+            if (variableDescription.getUuid().equals(selectedId)) {
+                found = true;
+            }
+        }
+
+        return result.toArray(new String[0]);
     }
 
     /**
@@ -141,7 +165,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         // convert json object to map of strings to integers (values from parameter form)
         jsonObject.forEach((key, value) -> {
             // exclude parameter name
-            if (!key.equals(PARAMETER_NAME) && value instanceof String && ((String) value).length() > 0) {
+            if (!key.equals(PARAMETER_NAME) && value instanceof String && !((String) value).isEmpty()) {
                 try {
                     // store new key combination in map
                     selectedValues.put(key, Integer.valueOf((String) value));
