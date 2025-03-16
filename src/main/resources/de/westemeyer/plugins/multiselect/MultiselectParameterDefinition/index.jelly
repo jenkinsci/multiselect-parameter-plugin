@@ -1,92 +1,28 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:f="/lib/form">
 
+    <!-- include index.js file -->
+    <st:adjunct includes="de.westemeyer.plugins.multiselect.MultiselectParameterDefinition.selects"/>
+
     <j:set var="decisionTree" value="${it.decisionTree}"/>
 
-    <script>
-        // bind java variable
-        var parameterDefinition${it.uuid} = <st:bind value="${it}"/>;
-
-        function fillInValues${it.uuid}(coordinates, selectBoxId) {
-            // get select list with given id
-            var select = document.getElementById(selectBoxId);
-
-            // get item list from java code, invoke anonymous function to fill received values into select list
-            parameterDefinition${it.uuid}.getItemList(coordinates, function(t) {
-                // get response values from "getItemList" call into javascript array
-                var options = t.responseObject();
-
-                // clear select list
-                select.options.length = 0;
-
-                // iterate all options
-                for(var i = 0; i &lt; options.length; i++) {
-                    // create new HTML option element as child of select box HTML item
-                    var el = document.createElement("option");
-
-                    // set option name as visible text
-                    el.textContent = options[i];
-
-                    // set option index as value
-                    el.value = i;
-
-                    // append element
-                    select.appendChild(el);
-                }
-
-                var functionName = selectBoxId.concat("Changed");
-                if (select.options.length > 0) {
-                    window[functionName](select);
-                }
-            });
-        }
-
-        <j:set var="variableDescriptions" value="${decisionTree.variableDescriptions}"/>
-
-        // list of successors, meaning: there is a variable for each of the selectboxes, containing the ID of its successor (box to the right)
-        <j:set var="last" value=""/>
-        <j:forEach var="variable" items="${variableDescriptions}" indexVar="i">
-            <j:if test="${i gt 0}">
-        var ${last} = "${variable.uuid}";
-            </j:if>
-            <j:set var="last" value="${variable.uuid}"/>
-
-        </j:forEach>
-
-        <j:forEach var="variable" items="${variableDescriptions}" indexVar="i">
-        function ${variable.uuid}Changed(select)
-        {
-            <j:if test="${i ne (variableDescriptions.size() - 1)}">
-                var coordinatesBuffer = new Array();
-            var e = null;
-                <j:forEach var="listItem" items="${variableDescriptions}" indexVar="j">
-                    <j:if test="${j lt (i + 1)}">
-            // check value of list box number ${j}
-            e = document.getElementById("${listItem.uuid}");
-            coordinatesBuffer.push(e.options[e.selectedIndex].value);
-                        <j:if test="${j eq i}">
-            fillInValues${it.uuid}(coordinatesBuffer, ${listItem.uuid});
-                        </j:if>
-                    </j:if>
-                </j:forEach>
-            </j:if>
-        }
-        </j:forEach>
-    </script>
+    <!-- Bind a variable for each configured multiselect parameter. There could be more than one per job, that's why the UUID has to be part of the name. -->
+    <st:bind var="multiselectParameterDefinition${it.uuid}" value="${it}"/>
 
     <j:set var="escapeEntryTitleAndDescription" value="false"/>
     <f:entry title="${h.escape(it.name)}" description="${it.formattedDescription}">
         <div name="parameter" description="${it.description}">
-            <input type="hidden" name="name" value="${it.name}" />
-            <ol id="${it.name} MultiLevelSelections">
-                <li id="${it.name} dropdowns for MultiLevelMultiSelect 0"
-                    class="${it.name} select div" style="display:inline">
+            <input type="hidden" name="name" value="${it.name}"/>
+
+            <ol id="MultiLevelSelections${it.uuid}">
+                <li id="dropdownsForMultiLevelMultiSelect${it.uuid}"
+                    class="${it.name} select div" style="display:inline" data-select-form="${it.uuid}">
                     <j:set var="i" value="0"/>
                     <table>
                         <tr>
                             <j:forEach var="dropdown" items="${decisionTree.variableDescriptions}">
-                                <td>${dropdown.label}<br/>
-                                    <select name="${dropdown.variableName}" onchange="${dropdown.uuid}Changed(this, '${it.name}')"
+                                <td><label for="${dropdown.uuid}">${dropdown.label}</label><br/>
+                                    <select data-select="${it.uuid}${dropdown.uuid}" data-codeclass="multiselectParameterDefinition${it.uuid}" name="${dropdown.variableName}"
                                             id="${dropdown.uuid}" style="display:inline">
                                             <j:set var="j" value="0"/>
                                             <j:forEach var="choice" items="${dropdown.initialValues}">
