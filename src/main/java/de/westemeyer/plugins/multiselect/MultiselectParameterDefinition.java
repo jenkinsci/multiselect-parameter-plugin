@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
 
     /** Configuration format for a parameter definition. */
     @CheckForNull
-    private MultiselectConfigurationFormat format;
+    private MultiselectConfigurationFormat format = MultiselectConfigurationFormat.CSV;
 
     /** UUID to be used to distinguish JavaScript values for multiple parameters from each other. */
     private String uuid = UUIDGenerator.generateUUID(15);
@@ -84,7 +84,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
      * @param coordinates coordinates in tree, i.e. item indices from columns
      * @return array of parameter values for given coordinates
      */
-    @JavaScriptMethod
+    @JavaScriptMethod(name = "getItemList")
     public String[] getItemList(Integer[] coordinates) {
         Queue<Integer> itemPath = createCoordinates(coordinates);
         List<String> returnList = new ArrayList<>();
@@ -101,6 +101,30 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     }
 
     /**
+     * Method used by JavaScript code to get all combo box ids that depend on content of the given combo box ID.
+     * @param selectedId combo box ID
+     * @return all combo box ids that depend on content of the given combo box ID
+     */
+    @JavaScriptMethod(name = "getDependingVariableIds")
+    public String[] getDependingVariableIds(String selectedId) {
+        if (decisionTree == null) {
+            return new String[0];
+        }
+        boolean found = false;
+        List<String> result = new ArrayList<>();
+        for (MultiselectVariableDescriptor variableDescription : decisionTree.getVariableDescriptions()) {
+            if (found) {
+                result.add(variableDescription.getUuid());
+            }
+            if (variableDescription.getUuid().equals(selectedId)) {
+                found = true;
+            }
+        }
+
+        return result.toArray(new String[0]);
+    }
+
+    /**
      * Create coordinates queue from integer array.
      * @param coordinates integer array
      * @return queue for use in visitor method
@@ -110,7 +134,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         Queue<Integer> itemPath = new ArrayDeque<>();
 
         // add all items to queue
-        Collections.addAll(itemPath, coordinates);
+        Arrays.stream(coordinates).filter(Objects::nonNull).forEach(itemPath::add);
 
         // return queue object
         return itemPath;
@@ -141,7 +165,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         // convert json object to map of strings to integers (values from parameter form)
         jsonObject.forEach((key, value) -> {
             // exclude parameter name
-            if (!key.equals(PARAMETER_NAME) && value instanceof String && ((String) value).length() > 0) {
+            if (!key.equals(PARAMETER_NAME) && value instanceof String && !((String) value).isEmpty()) {
                 try {
                     // store new key combination in map
                     selectedValues.put(key, Integer.valueOf((String) value));
@@ -297,15 +321,17 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof MultiselectParameterDefinition)) return false;
-        if (!super.equals(o)) return false;
-        MultiselectParameterDefinition that = (MultiselectParameterDefinition) o;
-        return Objects.equals(decisionTree, that.decisionTree) && format == that.format && Objects.equals(uuid, that.uuid);
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof MultiselectParameterDefinition)) {
+            return false;
+        }
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), decisionTree, format, uuid);
+        return Objects.hash(decisionTree, uuid);
     }
 }

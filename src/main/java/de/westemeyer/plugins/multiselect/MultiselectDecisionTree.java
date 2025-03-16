@@ -43,6 +43,9 @@ public class MultiselectDecisionTree implements Serializable {
     @NonNull
     private List<MultiselectVariableDescriptor> variableDescriptions = new ArrayList<>();
 
+    /**
+     * Empty constructor for pipeline configuration.
+     */
     @DataBoundConstructor
     public MultiselectDecisionTree() {
         // empty constructor is necessary, otherwise pipelines can not create

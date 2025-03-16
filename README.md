@@ -91,50 +91,34 @@ pipeline {
                     properties([
                             parameters([
                                     multiselect(
-                                            decisionTree: [$class              : 'de.westemeyer.plugins.multiselect.MultiselectDecisionTree',
-                                                           variableDescriptions: ([
-                                                                   [$class      : 'de.westemeyer.plugins.multiselect.MultiselectVariableDescriptor',
-                                                                    label       : "Sport",
-                                                                    variableName: "SELECTED_SPORT"
-                                                                   ],
-                                                                   [$class      : 'de.westemeyer.plugins.multiselect.MultiselectVariableDescriptor',
-                                                                    label       : "Team",
-                                                                    variableName: "SELECTED_TEAM"
-                                                                   ]
-                                                           ]),
-                                                           itemList            : ([
-                                                                   [$class  : 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                    value   : "Tennis",
-                                                                    children: ([
-                                                                            [$class: 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                             value : "Tennisclub Rumeln-Kaldenhausen e. V."
-                                                                            ],
-                                                                            [$class: 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                             label : "Alternative label",
-                                                                             value : "Oppumer TC"
-                                                                            ]
-                                                                    ])
-                                                                   ],
-                                                                   [$class  : 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                    value   : "Football",
-                                                                    children: ([
-                                                                            [$class: 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                             value : "Rumelner TV"
-                                                                            ],
-                                                                            [$class: 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                             value : "FC Rumeln"
-                                                                            ]
-                                                                    ])
-                                                                   ],
-                                                                   [$class  : 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                    value   : "Wakeboard",
-                                                                    children: ([
-                                                                            [$class: 'de.westemeyer.plugins.multiselect.MultiselectDecisionItem',
-                                                                             value : "WSC Duisburg Rheinhausen"
-                                                                            ]
-                                                                    ])
-                                                                   ]
-                                                           ]),
+                                            decisionTree: [
+                                                    variableDescriptions: [
+                                                            [
+                                                                    label       : 'Sport',
+                                                                    variableName: 'SELECTED_SPORT'
+                                                            ],
+                                                            [
+                                                                    label       : 'Team',
+                                                                    variableName: 'SELECTED_TEAM'
+                                                            ]
+                                                    ],
+                                                    itemList: [
+                                                            [children: [
+                                                                    [value: 'Tennisclub Rumeln-Kaldenhausen e. V.'],
+                                                                    [label: 'Alternative label', value: 'Oppumer TC']
+                                                                 ],
+                                                             value   : 'Tennis'
+                                                            ],
+                                                            [children: [
+                                                                    [value: 'Rumelner TV'],
+                                                                    [value: 'FC Rumeln']
+                                                                 ],
+                                                             value   : 'Football'],
+                                                            [children: [
+                                                                    [value: 'WSC Duisburg Rheinhausen']
+                                                                 ],
+                                                             value   : 'Wakeboard']
+                                                    ]
                                             ],
                                             description: 'Please select your favourite team!',
                                             name: 'Favourite team'
@@ -142,7 +126,6 @@ pipeline {
                             ])
                     ])
                 }
-
             }
         }
 

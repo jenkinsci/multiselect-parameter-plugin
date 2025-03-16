@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class MultiselectVariableDescriptorTest {
     /** Constant for label. */
     private static final String LABEL = "label";
@@ -14,30 +16,31 @@ class MultiselectVariableDescriptorTest {
 
     @Test
     void constructor() {
-        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME, 0);
-        Assertions.assertEquals(LABEL, descriptor.getLabel());
-        Assertions.assertEquals(NAME, descriptor.getVariableName());
-        Assertions.assertEquals(0, descriptor.getColumnIndex());
-        Assertions.assertEquals(30, descriptor.getUuid().length());
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME);
+        assertEquals(LABEL, descriptor.getLabel());
+        assertEquals(NAME, descriptor.getVariableName());
+        assertEquals(0, descriptor.getColumnIndex());
+        assertEquals(30, descriptor.getUuid().length());
         Assertions.assertNull(descriptor.getInitialValues());
-        List<MultiselectDecisionItem> value = Collections.singletonList(new MultiselectDecisionItem(null, LABEL, "value"));
+        MultiselectDecisionItem value1 = new MultiselectDecisionItem(LABEL, "value");
+        List<MultiselectDecisionItem> value = Collections.singletonList(value1);
         descriptor.setInitialValues(value);
-        Assertions.assertEquals(value, descriptor.getInitialValues());
+        assertEquals(value, descriptor.getInitialValues());
     }
 
     @Test
     void setLabel() {
-        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME, 0);
-        Assertions.assertEquals(LABEL, descriptor.getLabel());
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME);
+        assertEquals(LABEL, descriptor.getLabel());
         descriptor.setLabel("different label");
-        Assertions.assertEquals("different label", descriptor.getLabel());
+        assertEquals("different label", descriptor.getLabel());
     }
 
     @Test
     void setVariableName() {
-        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME, 0);
-        Assertions.assertEquals(NAME, descriptor.getVariableName());
+        MultiselectVariableDescriptor descriptor = new MultiselectVariableDescriptor(LABEL, NAME);
+        assertEquals(NAME, descriptor.getVariableName());
         descriptor.setVariableName("different name");
-        Assertions.assertEquals("different name", descriptor.getVariableName());
+        assertEquals("different name", descriptor.getVariableName());
     }
 }

@@ -121,7 +121,9 @@ public class CsvParser implements ConfigParser {
                     String variable = get(variableNames, i);
 
                     // create descriptor and add it to the list of variable descriptors
-                    variableDescriptions.add(new MultiselectVariableDescriptor(label, variable, i));
+                    MultiselectVariableDescriptor variableDescriptor = new MultiselectVariableDescriptor(label, variable);
+                    variableDescriptor.setColumnIndex(i);
+                    variableDescriptions.add(variableDescriptor);
                 }
             }
 
@@ -196,8 +198,10 @@ public class CsvParser implements ConfigParser {
             // if no value helper has been found...
             if (valueHelper == null) {
                 // ... create a new one
+                MultiselectDecisionItem decisionItem = new MultiselectDecisionItem(title, value);
+                decisionItem.setParent(currentHelper.getDecisionItem());
                 valueHelper = new ValueConstructionHelper(
-                        new MultiselectDecisionItem(currentHelper.getDecisionItem(), title, value));
+                        decisionItem);
 
                 // ... and add it to lookup table of current helper
                 currentHelper.addValueHelper(value, valueHelper);
