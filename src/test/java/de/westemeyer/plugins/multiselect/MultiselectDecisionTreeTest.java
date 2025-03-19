@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ class MultiselectDecisionTreeTest {
     @Test
     void exceptionInToString() {
         MultiselectDecisionTree decisionTree = new MultiselectDecisionTree() {
+            @Serial
             private static final long serialVersionUID = -2603343900904810385L;
 
             @Override
@@ -96,6 +98,7 @@ class MultiselectDecisionTreeTest {
     @Test
     void emptyItemListInitialValues() {
         MultiselectDecisionTree decisionTree = new MultiselectDecisionTree() {
+            @Serial
             private static final long serialVersionUID = -2603343900904810385L;
 
             @Override
@@ -118,15 +121,17 @@ class MultiselectDecisionTreeTest {
                 createItem("Very popular sport", "Wakeboard", createItem(null, "WSC Duisburg Rheinhausen"))));
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             decisionTree.serialize(new CsvWriter(), outputStream);
-            assertEquals("H,Sport,Team\n" +
-                    "V,SELECTED_SPORT,SELECTED_TEAM\n" +
-                    "C,Tennis,Tennisclub Rumeln-Kaldenhausen e.V.\n" +
-                    "T,,Alternative label\n" +
-                    "C,Tennis,Oppumer TC\n" +
-                    "C,Football,Rumelner TV\n" +
-                    "C,Football,FC Rumeln\n" +
-                    "T,Very popular sport,\n" +
-                    "C,Wakeboard,WSC Duisburg Rheinhausen\n", outputStream.toString());
+            assertEquals("""
+                    H,Sport,Team
+                    V,SELECTED_SPORT,SELECTED_TEAM
+                    C,Tennis,Tennisclub Rumeln-Kaldenhausen e.V.
+                    T,,Alternative label
+                    C,Tennis,Oppumer TC
+                    C,Football,Rumelner TV
+                    C,Football,FC Rumeln
+                    T,Very popular sport,
+                    C,Wakeboard,WSC Duisburg Rheinhausen
+                    """, outputStream.toString());
         }
     }
 

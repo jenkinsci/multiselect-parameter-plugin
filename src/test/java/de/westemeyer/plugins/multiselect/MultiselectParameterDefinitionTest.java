@@ -8,13 +8,12 @@ import net.sf.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 import static de.westemeyer.plugins.multiselect.MultiselectConfigurationFormat.CSV;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -90,7 +89,7 @@ class MultiselectParameterDefinitionTest {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
         MultiselectDecisionTree decisionTree = definition.getDecisionTree();
         assertNotNull(decisionTree);
-        List<String> idList = decisionTree.getVariableDescriptions().stream().map(MultiselectVariableDescriptor::getUuid).collect(Collectors.toList());
+        List<String> idList = decisionTree.getVariableDescriptions().stream().map(MultiselectVariableDescriptor::getUuid).toList();
 
         String[] dependingVariableIds = definition.getDependingVariableIds(idList.get(index));
         assertEquals(resultLength, dependingVariableIds.length);
@@ -119,7 +118,7 @@ class MultiselectParameterDefinitionTest {
     @Test
     void createValue() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
-        ParameterValue defaultParameterValue = definition.createValue((StaplerRequest) null);
+        ParameterValue defaultParameterValue = definition.createValue((StaplerRequest2) null);
         assertNotNull(defaultParameterValue);
         assertEquals(NAME, defaultParameterValue.getName());
         Object parameterValueContent = defaultParameterValue.getValue();
@@ -134,7 +133,7 @@ class MultiselectParameterDefinitionTest {
         values.put("name", "Hugo");
         values.put("integer", 1);
         values.put("empty", "");
-        MultiselectParameterValue value = (MultiselectParameterValue) definition.createValue(null, values);
+        MultiselectParameterValue value = (MultiselectParameterValue) definition.createValue((StaplerRequest2) null, values);
         assertNotNull(value);
         EnvVars vars = new EnvVars();
         value.buildEnvironment(null, vars);
@@ -190,7 +189,7 @@ class MultiselectParameterDefinitionTest {
         jsonObject.put("name", "parametername");
         jsonObject.put("description", DESCRIPTION);
         MultiselectParameterDefinition.DescriptorImpl descriptor = new MultiselectParameterDefinition.DescriptorImpl();
-        MultiselectParameterDefinition parameterDefinition = (MultiselectParameterDefinition) descriptor.newInstance(null, jsonObject);
+        MultiselectParameterDefinition parameterDefinition = (MultiselectParameterDefinition) descriptor.newInstance((StaplerRequest2) null, jsonObject);
         MultiselectDecisionTree decisionTree = parameterDefinition.getDecisionTree();
         assertNotNull(decisionTree);
         assertEquals(definition.getDecisionTree().toString(), decisionTree.toString());
@@ -210,9 +209,9 @@ class MultiselectParameterDefinitionTest {
     @Test
     void testEquals() {
         MultiselectParameterDefinition value = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
-        assertNotEquals(value, this);
+        assertNotEquals(this, value);
         assertEquals(value, value);
-        assertNotEquals(value, new MultiselectParameterDefinition("Other name", DESCRIPTION, INPUT, CSV));
+        assertNotEquals(new MultiselectParameterDefinition("Other name", DESCRIPTION, INPUT, CSV), value);
         MultiselectParameterValue sameNameDifferentContent = new MultiselectParameterValue("Hello", Collections.singletonMap("key", "value"));
         assertNotEquals(value, sameNameDifferentContent);
         MultiselectParameterDefinition actual = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
