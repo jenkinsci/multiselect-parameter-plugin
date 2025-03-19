@@ -8,7 +8,7 @@ import net.sf.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -119,7 +119,7 @@ class MultiselectParameterDefinitionTest {
     @Test
     void createValue() {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
-        ParameterValue defaultParameterValue = definition.createValue((StaplerRequest) null);
+        ParameterValue defaultParameterValue = definition.createValue((StaplerRequest2) null);
         assertNotNull(defaultParameterValue);
         assertEquals(NAME, defaultParameterValue.getName());
         Object parameterValueContent = defaultParameterValue.getValue();
@@ -134,7 +134,7 @@ class MultiselectParameterDefinitionTest {
         values.put("name", "Hugo");
         values.put("integer", 1);
         values.put("empty", "");
-        MultiselectParameterValue value = (MultiselectParameterValue) definition.createValue(null, values);
+        MultiselectParameterValue value = (MultiselectParameterValue) definition.createValue((StaplerRequest2) null, values);
         assertNotNull(value);
         EnvVars vars = new EnvVars();
         value.buildEnvironment(null, vars);
@@ -190,7 +190,7 @@ class MultiselectParameterDefinitionTest {
         jsonObject.put("name", "parametername");
         jsonObject.put("description", DESCRIPTION);
         MultiselectParameterDefinition.DescriptorImpl descriptor = new MultiselectParameterDefinition.DescriptorImpl();
-        MultiselectParameterDefinition parameterDefinition = (MultiselectParameterDefinition) descriptor.newInstance(null, jsonObject);
+        MultiselectParameterDefinition parameterDefinition = (MultiselectParameterDefinition) descriptor.newInstance((StaplerRequest2) null, jsonObject);
         MultiselectDecisionTree decisionTree = parameterDefinition.getDecisionTree();
         assertNotNull(decisionTree);
         assertEquals(definition.getDecisionTree().toString(), decisionTree.toString());

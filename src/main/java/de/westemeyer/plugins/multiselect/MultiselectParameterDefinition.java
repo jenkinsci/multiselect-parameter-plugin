@@ -11,7 +11,7 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
 
@@ -149,7 +149,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     }
 
     @Override
-    public ParameterValue createValue(StaplerRequest staplerRequest, JSONObject jsonObject) {
+    public ParameterValue createValue(StaplerRequest2 staplerRequest, JSONObject jsonObject) {
         return createValue(jsonObject);
     }
 
@@ -187,7 +187,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     }
 
     @Override
-    public ParameterValue createValue(StaplerRequest staplerRequest) {
+    public ParameterValue createValue(StaplerRequest2 staplerRequest) {
         return getDefaultParameterValue();
     }
 
@@ -277,7 +277,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         }
 
         @Override
-        public ParameterDefinition newInstance(@Nullable StaplerRequest req, @Nonnull JSONObject formData) {
+        public ParameterDefinition newInstance(@Nullable StaplerRequest2 req, @Nonnull JSONObject formData) {
             // currently only CSV configuration format is implemented
             MultiselectConfigurationFormat format = MultiselectConfigurationFormat.CSV;
 
