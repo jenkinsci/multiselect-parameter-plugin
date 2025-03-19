@@ -9,6 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  */
 public class MultiselectDecisionTree implements Serializable {
     /** Serial version UID. */
+    @Serial
     private static final long serialVersionUID = -5015514196308288683L;
 
     /** Logger for this object. */

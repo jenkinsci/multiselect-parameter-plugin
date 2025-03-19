@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 import static de.westemeyer.plugins.multiselect.MultiselectConfigurationFormat.CSV;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -90,7 +89,7 @@ class MultiselectParameterDefinitionTest {
         MultiselectParameterDefinition definition = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
         MultiselectDecisionTree decisionTree = definition.getDecisionTree();
         assertNotNull(decisionTree);
-        List<String> idList = decisionTree.getVariableDescriptions().stream().map(MultiselectVariableDescriptor::getUuid).collect(Collectors.toList());
+        List<String> idList = decisionTree.getVariableDescriptions().stream().map(MultiselectVariableDescriptor::getUuid).toList();
 
         String[] dependingVariableIds = definition.getDependingVariableIds(idList.get(index));
         assertEquals(resultLength, dependingVariableIds.length);
@@ -210,9 +209,9 @@ class MultiselectParameterDefinitionTest {
     @Test
     void testEquals() {
         MultiselectParameterDefinition value = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);
-        assertNotEquals(value, this);
+        assertNotEquals(this, value);
         assertEquals(value, value);
-        assertNotEquals(value, new MultiselectParameterDefinition("Other name", DESCRIPTION, INPUT, CSV));
+        assertNotEquals(new MultiselectParameterDefinition("Other name", DESCRIPTION, INPUT, CSV), value);
         MultiselectParameterValue sameNameDifferentContent = new MultiselectParameterValue("Hello", Collections.singletonMap("key", "value"));
         assertNotEquals(value, sameNameDifferentContent);
         MultiselectParameterDefinition actual = new MultiselectParameterDefinition(NAME, DESCRIPTION, INPUT, CSV);

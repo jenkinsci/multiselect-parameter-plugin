@@ -19,6 +19,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
  */
 public class MultiselectParameterDefinition extends ParameterDefinition {
     /** Serialization UID. */
+    @Serial
     private static final long serialVersionUID = 3307975793661301522L;
 
     /** Logger for this object. */

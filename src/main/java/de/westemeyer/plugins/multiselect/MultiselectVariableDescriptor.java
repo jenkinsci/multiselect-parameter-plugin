@@ -3,6 +3,7 @@ package de.westemeyer.plugins.multiselect;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
  */
 public class MultiselectVariableDescriptor implements Serializable {
     /** Serial version UID. */
+    @Serial
     private static final long serialVersionUID = -3664707568849231781L;
 
     /** Variable label. */
