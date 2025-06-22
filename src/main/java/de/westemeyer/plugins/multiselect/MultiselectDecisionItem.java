@@ -3,6 +3,7 @@ package de.westemeyer.plugins.multiselect;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Queue;
  */
 public class MultiselectDecisionItem implements Serializable {
     /** Serial version UID. */
+    @Serial
     private static final long serialVersionUID = -7959174754803921973L;
 
     /** Label for display in selection list. */

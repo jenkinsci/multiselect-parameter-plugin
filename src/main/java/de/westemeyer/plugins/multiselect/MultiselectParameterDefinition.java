@@ -11,7 +11,7 @@ import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.verb.POST;
 
@@ -19,6 +19,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import java.util.logging.Logger;
  */
 public class MultiselectParameterDefinition extends ParameterDefinition {
     /** Serialization UID. */
+    @Serial
     private static final long serialVersionUID = 3307975793661301522L;
 
     /** Logger for this object. */
@@ -149,7 +151,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     }
 
     @Override
-    public ParameterValue createValue(StaplerRequest staplerRequest, JSONObject jsonObject) {
+    public ParameterValue createValue(StaplerRequest2 staplerRequest, JSONObject jsonObject) {
         return createValue(jsonObject);
     }
 
@@ -187,7 +189,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
     }
 
     @Override
-    public ParameterValue createValue(StaplerRequest staplerRequest) {
+    public ParameterValue createValue(StaplerRequest2 staplerRequest) {
         return getDefaultParameterValue();
     }
 
@@ -277,7 +279,7 @@ public class MultiselectParameterDefinition extends ParameterDefinition {
         }
 
         @Override
-        public ParameterDefinition newInstance(@Nullable StaplerRequest req, @Nonnull JSONObject formData) {
+        public ParameterDefinition newInstance(@Nullable StaplerRequest2 req, @Nonnull JSONObject formData) {
             // currently only CSV configuration format is implemented
             MultiselectConfigurationFormat format = MultiselectConfigurationFormat.CSV;
 

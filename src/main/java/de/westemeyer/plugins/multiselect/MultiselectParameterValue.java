@@ -8,6 +8,7 @@ import hudson.util.VariableResolver;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import java.io.Serial;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,6 +18,7 @@ import java.util.Objects;
  */
 public class MultiselectParameterValue extends ParameterValue {
     /** Serial version UID. */
+    @Serial
     private static final long serialVersionUID = -5612496743376284422L;
 
     /** The values selected in "build with parameters" step. */
